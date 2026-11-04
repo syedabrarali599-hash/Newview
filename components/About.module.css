@@ -1,0 +1,29 @@
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.33vw, 48px);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: clamp(64px, 6.9vw, 100px) var(--section-x) clamp(80px, 6.9vw, 100px);
+}
+
+.text {
+  max-width: 1202px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.33vw, 48px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink-50);
+}
+
+/* Each split line carries a two-tone gradient that slides to "fill" it. */
+.line {
+  width: fit-content;
+  background-image: linear-gradient(90deg, var(--ink) 0 50%, var(--ink-50) 50% 100%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

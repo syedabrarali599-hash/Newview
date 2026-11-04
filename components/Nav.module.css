@@ -1,0 +1,85 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(18px, 2.6vw, 37px) var(--gutter) 14px;
+  transition:
+    background-color 0.5s ease,
+    backdrop-filter 0.5s ease,
+    padding 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+
+.nav[data-scrolled="true"] {
+  padding-top: 14px;
+  background: rgba(252, 248, 240, 0.78);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: 0 1px 0 rgba(34, 13, 4, 0.06);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8.5px;
+}
+
+.mark {
+  width: clamp(32px, 3.05vw, 44px);
+  height: auto;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.brand:hover .mark {
+  transform: rotate(-90deg);
+}
+
+.word {
+  font-family: var(--font-logo);
+  font-weight: 700;
+  font-size: clamp(24px, 2.27vw, 32.6px);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.links {
+  display: flex;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: inline-block;
+  height: 19px;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 19px;
+  color: var(--ink);
+}
+
+/* Rolling text hover: an orange copy sits right below via text-shadow. */
+.linkText {
+  display: block;
+  text-shadow: 0 19px 0 var(--orange);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.link:hover .linkText,
+.link:focus-visible .linkText {
+  transform: translateY(-19px);
+}
+
+@media (max-width: 520px) {
+  .links {
+    gap: 16px;
+  }
+}

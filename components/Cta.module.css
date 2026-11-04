@@ -1,0 +1,238 @@
+.section {
+  position: relative;
+  z-index: 5;
+  background: var(--cream);
+  padding: clamp(48px, 4.8vw, 69px) var(--section-x) clamp(80px, 8.5vw, 120px);
+}
+
+.frame {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 520fr) minmax(0, 640fr);
+  align-items: center;
+  gap: clamp(24px, 5.4vw, 76px);
+  max-width: 1280px;
+  min-height: clamp(300px, 25vw, 360px);
+  margin: 0 auto;
+  padding: 16px 16px 16px clamp(28px, 5.4vw, 78px);
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  background: var(--orange);
+}
+
+.edge {
+  position: absolute;
+  z-index: 2;
+  background: var(--orange);
+}
+
+.edgeTop,
+.edgeBottom {
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
+.edgeTop {
+  top: 0;
+  transform-origin: left;
+}
+
+.edgeBottom {
+  bottom: 0;
+  transform-origin: right;
+}
+
+.edgeLeft,
+.edgeRight {
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+
+.edgeRight {
+  right: 0;
+  transform-origin: top;
+}
+
+.edgeLeft {
+  left: 0;
+  transform-origin: bottom;
+}
+
+.handle {
+  position: absolute;
+  z-index: 3;
+  width: 20px;
+  height: 20px;
+  margin: -10px;
+  background: var(--orange);
+  border: 2px solid var(--cream);
+  box-shadow: 0 0 0 1.5px var(--orange);
+}
+
+.tl {
+  left: 0;
+  top: 0;
+}
+.tr {
+  right: 0;
+  top: 0;
+}
+.bl {
+  left: 0;
+  bottom: 0;
+}
+.br {
+  right: 0;
+  bottom: 0;
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--h-section);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  max-width: 520px;
+}
+
+.button {
+  font-size: 18px;
+}
+
+.art {
+  position: relative;
+  z-index: 1;
+}
+
+.illo {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+/* ---------- Illustration ---------- */
+.illo * {
+  transform-box: fill-box;
+}
+
+.pop {
+  transform-origin: 50% 50%;
+}
+
+.twinkle {
+  transform-origin: center;
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+.twinkle:nth-child(2n) {
+  animation-delay: -1.2s;
+}
+
+.flow {
+  stroke-dasharray: 10 10;
+  animation: flow 0.8s linear infinite;
+}
+
+.glow {
+  filter: blur(18px);
+  transition: fill 0.4s ease;
+}
+
+.bulbGlass {
+  fill: var(--yellow);
+  transition: fill 0.4s ease;
+}
+
+.bulbRays {
+  transform-origin: center;
+  transition:
+    opacity 0.4s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bulb:hover .bulbRays {
+  transform: scale(1.12);
+}
+
+.illo[data-on="false"] .bulbGlass {
+  fill: #f2efe6;
+}
+
+.illo[data-on="false"] .bulbRays,
+.illo[data-on="false"] .glow {
+  opacity: 0 !important;
+}
+
+.win {
+  transform-origin: center;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.win:hover {
+  transform: translateY(-6px) rotate(-1.5deg);
+}
+
+.sun {
+  transform-box: view-box;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.final:hover .sun {
+  transform: translateY(-14px);
+}
+
+.click {
+  transform-origin: 0 0;
+  animation: click 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.6) rotate(45deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+@keyframes click {
+  0%,
+  60%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  70% {
+    transform: translate(-2px, -2px) scale(0.86);
+  }
+}
+
+@media (max-width: 900px) {
+  .frame {
+    grid-template-columns: 1fr;
+    padding: 40px 24px;
+  }
+}

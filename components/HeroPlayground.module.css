@@ -1,0 +1,185 @@
+.frame {
+  --cell: calc(100cqw * 19 / 1336);
+  position: relative;
+  max-width: 1336px;
+  margin: clamp(28px, 2.8vw, 40px) auto 0;
+  aspect-ratio: 1336 / 575;
+  background: var(--cream);
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: crosshair;
+  container-type: inline-size;
+  user-select: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.glasses {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100cqw * 1068 / 1336);
+  margin-left: calc(100cqw * -534 / 1336);
+  margin-top: calc(100cqw * -248 / 1336);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.glassesInner {
+  position: relative;
+}
+
+.glassesInner img {
+  width: 100%;
+  height: auto;
+}
+
+/* A soft highlight that slides across the art, masked to its own pixels. */
+.shine {
+  --shine: 30;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent calc(var(--shine) * 1% - 14%),
+    rgba(255, 255, 255, 0.55) calc(var(--shine) * 1%),
+    transparent calc(var(--shine) * 1% + 14%)
+  );
+  -webkit-mask: url("/assets/hero-glasses.png") center / 100% 100% no-repeat;
+  mask: url("/assets/hero-glasses.png") center / 100% 100% no-repeat;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.cursor {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cursorInner {
+  position: relative;
+}
+
+.cursorFloat img {
+  width: 100%;
+  height: auto;
+}
+
+/* Positions & rotations straight from the Figma frame. */
+.cursorPurple {
+  left: calc(100% * 1032 / 1336);
+  top: calc(100% * 47 / 575);
+  width: calc(100cqw * 124.382 / 1336);
+}
+
+.cursorPurple .cursorFloat {
+  width: calc(100cqw * 95 / 1336);
+  margin: calc(100cqw * 18 / 1336) auto 0;
+}
+
+.cursorPurple img {
+  transform: rotate(-31.54deg);
+}
+
+.cursorYellow {
+  left: calc(100% * 184.78 / 1336);
+  top: calc(100% * 406.25 / 575);
+  width: calc(100cqw * 127 / 1336);
+}
+
+.cursorYellow .cursorFloat {
+  width: calc(100cqw * 103 / 1336);
+  margin: calc(100cqw * 14 / 1336) auto 0;
+}
+
+.cursorYellow img {
+  transform: rotate(-160.77deg) scaleY(-1);
+}
+
+.tag {
+  position: absolute;
+  padding: 4px 9px;
+  font-family: var(--font-ui);
+  font-size: clamp(10px, 0.9cqw, 12px);
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 999px;
+  transform-origin: left top;
+}
+
+.tagPurple {
+  left: 18%;
+  top: 92%;
+  background: var(--purple);
+  color: #fff;
+}
+
+.tagYellow {
+  right: 6%;
+  bottom: 96%;
+  background: var(--yellow);
+  color: var(--ink);
+  transform-origin: right bottom;
+}
+
+.hint {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--ink-50);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .glasses {
+    width: 100cqw;
+    margin-left: -50cqw;
+    margin-top: calc(100cqw * -0.2322);
+  }
+
+  .cursorPurple {
+    left: 72%;
+    top: 4%;
+  }
+
+  .cursorYellow {
+    left: 6%;
+    top: 74%;
+  }
+
+  .cursorPurple,
+  .cursorYellow {
+    width: 15cqw;
+  }
+
+  .cursorPurple .cursorFloat,
+  .cursorYellow .cursorFloat {
+    width: 12cqw;
+  }
+
+  .tag {
+    font-size: 10px;
+  }
+}

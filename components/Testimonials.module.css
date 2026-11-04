@@ -1,0 +1,122 @@
+.section {
+  position: relative;
+  z-index: 5;
+  background: var(--cream);
+  padding: clamp(72px, 6.9vw, 100px) var(--section-x) clamp(72px, 6.9vw, 100px);
+}
+
+.heading {
+  max-width: 640px;
+  margin: 0 auto clamp(40px, 3.9vw, 56px);
+}
+
+.track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 292px;
+  padding: 32px;
+  background: #fff;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px -30px rgba(34, 13, 4, 0.3);
+}
+
+.quote {
+  margin: 0;
+  max-width: 350px;
+  font-size: 18px;
+  line-height: 25px;
+  color: var(--ink-80);
+}
+
+.person {
+  margin-top: auto;
+  padding-top: 40px;
+}
+
+.name {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.role {
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--ink-70);
+}
+
+.mark {
+  position: absolute;
+  right: 32px;
+  bottom: 32px;
+  width: 100px;
+  height: auto;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(34, 13, 4, 0.2);
+  transition:
+    width 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.5s ease;
+}
+
+.dot[data-active="true"] {
+  width: 31px;
+  background: var(--ink);
+}
+
+.dots[data-scrollable="false"] .dot {
+  pointer-events: none;
+}
+
+@media (max-width: 960px) {
+  .track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 calc(var(--section-x) * -1);
+    padding: 0 var(--section-x) 8px;
+    scroll-padding: 0 var(--section-x);
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    flex: 0 0 min(360px, 84vw);
+    scroll-snap-align: start;
+  }
+
+  .mark {
+    width: 72px;
+  }
+}

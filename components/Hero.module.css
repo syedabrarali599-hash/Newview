@@ -1,0 +1,67 @@
+.hero {
+  position: relative;
+  padding: clamp(112px, 10.76vw, 155px) var(--gutter) clamp(40px, 3.9vw, 56px);
+  background: var(--cream);
+  overflow: hidden;
+}
+
+/* Hairline diagonal pattern from the design (2% black, ~15.6px apart). */
+.lines {
+  position: absolute;
+  inset: 0 0 10% 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 15.6px);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+}
+
+.top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  max-width: 1336px;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(46px, 5.56vw, 80px);
+  line-height: 1.025;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  max-width: 13ch;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: min(381px, 100%);
+  flex-shrink: 0;
+}
+
+.copy {
+  font-size: 18px;
+  line-height: 27px;
+  color: var(--ink-80);
+}
+
+.cta {
+  will-change: clip-path;
+}
+
+.ctaLabel {
+  display: inline-flex;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+}

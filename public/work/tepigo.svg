@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 570 1166" font-family="Inter, Arial, sans-serif">
+  <rect x="4" y="4" width="562" height="1158" rx="86" fill="#0d0d10"/>
+  <rect x="22" y="22" width="526" height="1122" rx="70" fill="#f4f4f8"/>
+  <path d="M22 92a70 70 0 0 1 70-70h386a70 70 0 0 1 70 70v352H22z" fill="#4338ca"/>
+  <rect x="200" y="40" width="170" height="44" rx="22" fill="#0d0d10"/>
+  <text x="64" y="72" fill="#fff" font-size="22" font-weight="600">9:41</text>
+  <circle cx="92" cy="146" r="26" fill="#fff" opacity=".2"/>
+  <text x="132" y="140" fill="#fff" font-size="20" font-weight="600">Tepigo</text>
+  <rect x="132" y="152" width="170" height="10" rx="5" fill="#fff" opacity=".45"/>
+  <circle cx="480" cy="146" r="22" fill="#fff"/>
+  <text x="64" y="244" fill="#fff" font-size="34" font-weight="700">Find what</text>
+  <text x="64" y="286" fill="#fff" font-size="34" font-weight="700">you need, fast</text>
+  <rect x="64" y="332" width="442" height="70" rx="20" fill="#fff"/>
+  <circle cx="104" cy="367" r="12" fill="none" stroke="#9a9ab0" stroke-width="4"/>
+  <rect x="130" y="361" width="190" height="12" rx="6" fill="#c9c9d6"/>
+  <rect x="44" y="476" width="230" height="180" rx="24" fill="#fff"/>
+  <rect x="296" y="476" width="230" height="180" rx="24" fill="#fff"/>
+  <rect x="68" y="500" width="120" height="14" rx="7" fill="#1d1d28"/>
+  <rect x="68" y="524" width="160" height="10" rx="5" fill="#c9c9d6"/>
+  <rect x="320" y="500" width="120" height="14" rx="7" fill="#1d1d28"/>
+  <rect x="320" y="524" width="160" height="10" rx="5" fill="#c9c9d6"/>
+  <rect x="68" y="590" width="80" height="40" rx="12" fill="#4338ca" opacity=".15"/>
+  <rect x="320" y="590" width="80" height="40" rx="12" fill="#4338ca" opacity=".15"/>
+  <rect x="44" y="680" width="482" height="120" rx="24" fill="#fff"/>
+  <rect x="68" y="708" width="200" height="14" rx="7" fill="#1d1d28"/>
+  <rect x="68" y="734" width="300" height="10" rx="5" fill="#c9c9d6"/>
+  <rect x="44" y="820" width="482" height="120" rx="24" fill="#fff"/>
+  <rect x="68" y="848" width="160" height="14" rx="7" fill="#1d1d28"/>
+  <rect x="68" y="874" width="260" height="10" rx="5" fill="#c9c9d6"/>
+</svg>

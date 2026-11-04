@@ -18,7 +18,12 @@ The New View studio landing page, built from the **Final Webiste Themes** page i
 npm install
 npm run dev        # http://localhost:3000
 npm run build && npm start   # production
+npm run build:static         # single static page in dist-static/ (host anywhere)
 ```
+
+`build:static` bundles the same components with esbuild into one self-contained
+`index.html`, plus its fonts and images. It works from any folder or sub-path,
+which is how the hosted preview is published.
 
 ## What's animated
 

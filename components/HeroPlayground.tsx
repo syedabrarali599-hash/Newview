@@ -288,14 +288,19 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         <div className={styles.glassesInner}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/hero-glasses.png"
+            src="assets/hero-glasses.png"
             alt="Pixel-art sunglasses: one lens shows a grey landscape, the other a bright sunny one — a new view."
             width={1838}
             height={856}
             draggable={false}
             fetchPriority="high"
           />
-          <div ref={shine} className={styles.shine} aria-hidden="true" />
+          <div
+            ref={shine}
+            className={styles.shine}
+            style={{ WebkitMaskImage: "url(assets/hero-glasses.png)", maskImage: "url(assets/hero-glasses.png)" }}
+            aria-hidden="true"
+          />
         </div>
       </div>
 
@@ -303,7 +308,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         <div className={`${styles.cursorInner} js-reveal`}>
           <div className={styles.cursorFloat}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/cursor-purple.png" alt="" draggable={false} />
+            <img src="assets/cursor-purple.png" alt="" draggable={false} />
           </div>
           <span className={`${styles.tag} ${styles.tagPurple}`}>Designer</span>
         </div>
@@ -312,7 +317,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         <div className={`${styles.cursorInner} js-reveal`}>
           <div className={styles.cursorFloat}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/cursor-yellow.png" alt="" draggable={false} />
+            <img src="assets/cursor-yellow.png" alt="" draggable={false} />
           </div>
           <span className={`${styles.tag} ${styles.tagYellow}`}>Product team</span>
         </div>

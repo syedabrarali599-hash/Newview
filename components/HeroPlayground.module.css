@@ -58,8 +58,13 @@
     rgba(255, 255, 255, 0.55) calc(var(--shine) * 1%),
     transparent calc(var(--shine) * 1% + 14%)
   );
-  -webkit-mask: url("/assets/hero-glasses.png") center / 100% 100% no-repeat;
-  mask: url("/assets/hero-glasses.png") center / 100% 100% no-repeat;
+  /* mask-image is set inline (relative URL) so it works under any base path */
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
   mix-blend-mode: soft-light;
   pointer-events: none;
 }

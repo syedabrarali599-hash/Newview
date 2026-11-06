@@ -27,7 +27,7 @@ which is how the hosted preview is published.
 
 ## What's animated
 
-- **Loader** – brand orange from the first frame: a cream counter and progress bar, then six orange panels wipe up (seamlessly, no hairlines) to reveal the page.
+- **Loader** – brand orange from the first frame with the Figma ink counter and progress bar. When loading finishes the number rolls away and the orange breaks into square pixels that shrink away from the centre outwards, revealing the site (`components/Loader.tsx`). The previous six-panel wipe is in git history (commit 1898790) if you want it back.
 - **Hero** – nav drops in; the headline reveals word by word (fade 0 → 100%, blur → sharp); copy rises line by line; the button wipes in. In the glasses frame the grid lights up in brand-orange pixels under the cursor (click for a ripple), the glasses tilt in 3D, and moving towards either pixel cursor makes it *your* cursor (one at a time).
 - **About** – both paragraphs sit at 50% opacity and fill in line by line as you scroll.
 - **Section headings & subcopy** – every heading uses the same word-by-word reveal; subcopy rises line by line.

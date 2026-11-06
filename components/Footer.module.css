@@ -2,10 +2,11 @@
   position: relative;
   z-index: 5;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  column-gap: clamp(40px, 18vw, 262px);
+  /* Figma: copy column at x 61 (434 wide), navigation at 757, contact at 1175. */
+  grid-template-columns: minmax(0, 1fr) 156px 212px;
+  column-gap: clamp(32px, 18.2vw, 262px);
   row-gap: 48px;
-  padding: 74px clamp(20px, 4.2vw, 61px) 74px;
+  padding: 74px clamp(20px, 3.7vw, 53px) 74px clamp(20px, 4.24vw, 61px);
   background: var(--paper);
 }
 

@@ -78,3 +78,25 @@ export function fadeUp(
     },
   );
 }
+
+/** Body copy that rises line by line from behind a mask. */
+export function revealLines(
+  el: HTMLElement,
+  opts: { trigger?: Element; start?: string; delay?: number } = {},
+) {
+  if (prefersReducedMotion()) {
+    gsap.set(el, { autoAlpha: 1 });
+    return null;
+  }
+  gsap.set(el, { autoAlpha: 1 });
+  const split = SplitText.create(el, { type: "lines", mask: "lines" });
+  return gsap.from(split.lines, {
+    yPercent: 110,
+    autoAlpha: 0,
+    duration: 1.05,
+    ease: EASE.out,
+    stagger: 0.1,
+    delay: opts.delay ?? 0.35,
+    scrollTrigger: { trigger: opts.trigger ?? el, start: opts.start ?? "top 85%", once: true },
+  });
+}

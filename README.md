@@ -27,17 +27,18 @@ which is how the hosted preview is published.
 
 ## What's animated
 
-- **Loader** – counter and progress bar, then six orange panels wipe up to reveal the page.
-- **Hero** – nav drops in; the headline reveals word by word (fade from 0 → 100%, blur → sharp); the copy rises line by line; the button wipes in. The glasses frame is interactive: the pixel grid lights up under the cursor (click for a ripple), the glasses tilt in 3D with a moving lens shine, and two "multiplayer" cursors drift after yours.
+- **Loader** – counter and progress bar, then six orange panels wipe up (seamlessly, no hairlines) to reveal the page.
+- **Hero** – nav drops in; the headline reveals word by word (fade 0 → 100%, blur → sharp); copy rises line by line; the button wipes in. In the glasses frame the grid lights up in brand-orange pixels under the cursor (click for a ripple), the glasses tilt in 3D, and moving towards either pixel cursor makes it *your* cursor (one at a time).
 - **About** – both paragraphs sit at 50% opacity and fill in line by line as you scroll.
-- **Section headings** – every heading uses the same word-by-word reveal (`lib/animations.ts → revealHeading`).
-- **Services** – the four cards stack (sticky). Each card sinks back as the next slides over it, and its content animates in. The pixel art is rebuilt from the Figma illustrations as spring-loaded particles that scatter from your cursor. The ghost's eyes follow you, the cherries sway, the potion bubbles and the heart beats faster when you're near.
-- **Work** – cards appear one after another; on hover the image zooms and the arrow nudges right. The orange "saved for you" card flips to white with dark text and an orange arrow button.
-- **Process** – the orange panel rises from the bottom while scaling up to fill the viewport. It then pins while the braces glide in and the statement arrives from the right. Each step slides in from its own side (left, right, left, right). "Let's Make It Happen" pops in; on hover it behaves like a selected Figma frame (selection outline, handles, frame name, live size badge).
-- **Getting started** – cards fade up in sequence; each illustration has its own hover animation.
-- **What makes us different** – heading, toggle, card and button appear first, then the big logo draws itself, then the gradient blooms behind it. The toggle really works: it switches between the "with" and "without New View" lists.
-- **Testimonials** – a simple staggered fade-up; on small screens the cards become a swipeable slider with working dots.
-- **CTA** – the frame outline draws itself, the corner handles snap on, the orange fill expands, then the copy, button and illustration appear. The illustration is interactive: your cursor is followed, the bulb glows as you approach (click it to toggle), and the windows parallax.
+- **Section headings & subcopy** – every heading uses the same word-by-word reveal; subcopy rises line by line.
+- **Services** – the four cards stack (sticky). The pixel illustration stays in place while the next card's top edge sweeps up: the old art shows above the line, the new art below it, with a glitchy scan-line band where they meet, and the previous card's copy greys out. The first illustration flies together pixel by pixel. All four illustrations are original pixel art (pen nib, browser window, design-system tiles, megaphone) and react to the cursor. On phones each card carries its own illustration.
+- **Work** – the real project images from Figma; cards appear one after another; on hover the image zooms and the arrow nudges right. On the orange "saved for you" card the pixels hop to new grid cells and the arrow shoots up and back in.
+- **Process** – the orange panel rises from the bottom while scaling up to fill the viewport; the statement arrives from the right; each step slides in from its own side. "Let's Make It Happen" keeps the exact design (white frame, corner handles); on hover the handles stretch outwards and pixels fill the frame black.
+- **Getting started** – cards fade up in sequence; each pixel illustration (chat, checklist, rocket) assembles on arrival and animates on hover.
+- **What makes us different** – heading, toggle, card and button first, then the big logo draws itself, then the gradient blooms. The toggle switches between the "with" and "without New View" lists.
+- **Testimonials** – a staggered fade-up; a swipeable slider with working dots on small screens.
+- **CTA** – quick (~1.4s): the frame outline draws, handles snap on, the orange fills in, then copy, button and the pixel idea → wireframe → design illustration (interactive: your cursor in the picture follows you, the bulb glows as you approach).
+- **Every CTA button** – hover grows square pixels outward from where the cursor entered until the button is solid black (`lib/pixelHover.ts`).
 
 Everything respects `prefers-reduced-motion`.
 
@@ -58,7 +59,7 @@ The work cards all shared the same truncated placeholder description, so each no
 ## Things to swap in
 
 - **Display font** – the design uses *Season Mix* (a licensed trial font). The site falls back to Newsreader, the closest open-source match. To use the real font, add the files to `public/fonts/` and an `@font-face` named `"Season Mix"` in `app/globals.css`; it's already first in `--font-display`.
-- **Project thumbnails** – `public/work/*.svg` are mockups standing in for the real project screenshots, which couldn't be exported because the Figma connection hit its plan limit. Replace them with real images and update the paths in `components/Work.tsx`.
+- **Pixel illustrations** – drawn in `scripts/gen-pixel-art.py`; run `python3 scripts/gen-pixel-art.py` after editing to regenerate `components/pixelArt.data.ts`.
 - **Links** – CTAs open an email to `hello@newview.co` (see `lib/site.ts`). The social links point to each network's home page, and the "View Project" links scroll to the work section.
 
 ## Structure

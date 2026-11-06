@@ -6,16 +6,17 @@ import styles from "./HeroPlayground.module.css";
 
 const DESIGN_W = 1336;
 const CELL = 19; // grid cell size in the design (px at 1336 wide)
-const TRAIL_COLORS = ["#e85313", "#ffd400", "#0b8a86", "#8b2cf5", "#ff8a3d"];
+const TRAIL_COLOR = "#e85313"; // brand orange
 
-type Cell = { life: number; color: string };
+type Cell = { life: number };
 type Ripple = { x: number; y: number; t: number };
 
 /**
  * The interactive frame under the hero headline.
  *  - the pixel grid lights up along the cursor path (and ripples on click)
  *  - the glasses tilt in 3D towards the cursor with a moving lens shine
- *  - two "multiplayer" cursors drift after yours, like designers in the file
+ *  - move close to one of the two pixel cursors and it becomes your cursor
+ *    (only one at a time; the other stays where it is)
  */
 export default function HeroPlayground({ play }: { play: boolean }) {
   const frame = useRef<HTMLDivElement>(null);
@@ -24,6 +25,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
   const shine = useRef<HTMLDivElement>(null);
   const cursorA = useRef<HTMLDivElement>(null);
   const cursorB = useRef<HTMLDivElement>(null);
+  const floatTweens = useRef<gsap.core.Tween[]>([]);
 
   // ---------- Pixel trail canvas ----------
   useEffect(() => {
@@ -38,7 +40,6 @@ export default function HeroPlayground({ play }: { play: boolean }) {
     let size = 0;
     let dpr = 1;
     let last: { x: number; y: number } | null = null;
-    let colorIndex = 0;
     let visible = true;
     let idleTimer = 0;
     let pointerInside = false;
@@ -60,11 +61,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
       const key = cy * cols + cx;
       const existing = cells.get(key);
       if (existing && existing.life > life) return;
-      colorIndex = (colorIndex + 1) % (TRAIL_COLORS.length * 6);
-      cells.set(key, {
-        life,
-        color: existing?.color ?? TRAIL_COLORS[Math.floor(colorIndex / 6)],
-      });
+      cells.set(key, { life });
     };
 
     const paintSegment = (x0: number, y0: number, x1: number, y1: number) => {
@@ -122,6 +119,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, cv.width, cv.height);
+      ctx.fillStyle = TRAIL_COLOR;
       for (const [key, cell] of cells) {
         cell.life -= dt * 1.25;
         if (cell.life <= 0) {
@@ -131,7 +129,6 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         const x = (key % cols) * size;
         const y = Math.floor(key / cols) * size;
         ctx.globalAlpha = Math.pow(cell.life, 1.6) * 0.85;
-        ctx.fillStyle = cell.color;
         ctx.fillRect(x + 0.5, y + 0.5, size - 1, size - 1);
       }
       ctx.globalAlpha = 1;
@@ -157,7 +154,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
     };
   }, []);
 
-  // ---------- Glasses tilt + multiplayer cursors ----------
+  // ---------- Glasses tilt + "become the cursor" ----------
   useGSAP(
     () => {
       if (prefersReducedMotion()) return;
@@ -171,14 +168,49 @@ export default function HeroPlayground({ play }: { play: boolean }) {
       const ry = gsap.quickTo(g, "rotationY", { duration: 1.2, ease: "power3.out" });
       const sh = gsap.quickTo(shine.current, "--shine", { duration: 1.1, ease: "power3.out" });
 
-      const followers = [
-        { el: cursorA.current!, offset: { x: 46, y: -34 }, dur: 1.5 },
-        { el: cursorB.current!, offset: { x: -64, y: 40 }, dur: 1.05 },
-      ].map((f) => ({
-        ...f,
-        x: gsap.quickTo(f.el, "x", { duration: f.dur, ease: "power3.out" }),
-        y: gsap.quickTo(f.el, "y", { duration: f.dur, ease: "power3.out" }),
-      }));
+      // Each pixel cursor's arrow tip sits ~31% of the image width from its
+      // centre, along the direction the cursor art is rotated (from Figma).
+      const cursors = [
+        { el: cursorA.current!, angle: -31.54 },
+        { el: cursorB.current!, angle: -160.77 },
+      ].map((c) => ({ ...c, x: 0, y: 0, tx: 0, ty: 0, speed: 6 }));
+
+      const homeTip = (c: (typeof cursors)[number]) => {
+        const float = c.el.querySelector<HTMLElement>("[data-float]")!;
+        const img = float.querySelector("img")!;
+        const cx = c.el.offsetLeft + float.offsetLeft + img.offsetWidth / 2;
+        const cy = c.el.offsetTop + float.offsetTop + img.offsetHeight / 2;
+        const a = (c.angle * Math.PI) / 180;
+        const r = img.offsetWidth * 0.309;
+        return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
+      };
+
+      let captured: (typeof cursors)[number] | null = null;
+      const floats = cursors.map((c) => c.el.querySelector<HTMLElement>("[data-float]")!);
+
+      const capture = (c: (typeof cursors)[number] | null) => {
+        if (captured === c) return;
+        if (captured) {
+          captured.tx = 0;
+          captured.ty = 0;
+          captured.speed = 5;
+          captured.el.dataset.captured = "false";
+        }
+        captured = c;
+        el.dataset.capturing = c ? "true" : "false";
+        if (c) {
+          c.speed = 22;
+          c.el.dataset.captured = "true";
+        }
+        // The captured cursor stops bobbing so its tip sits exactly on yours.
+        floats.forEach((f, i) => {
+          const idle = floatTweens.current[i];
+          if (cursors[i] === c) {
+            idle?.pause();
+            gsap.to(f, { y: 0, rotation: 0, duration: 0.2 });
+          } else idle?.play();
+        });
+      };
 
       const onMove = (e: PointerEvent) => {
         const r = el.getBoundingClientRect();
@@ -193,12 +225,22 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         rx(-ny * 12);
         sh((nx + 0.5) * 100);
 
-        const scale = r.width / DESIGN_W;
-        for (const f of followers) {
-          const homeX = f.el.offsetLeft + f.el.offsetWidth / 2;
-          const homeY = f.el.offsetTop + f.el.offsetHeight / 2;
-          f.x(px - homeX + f.offset.x * scale);
-          f.y(py - homeY + f.offset.y * scale);
+        // Which cursor is the pointer heading for?
+        const radius = Math.max(70, (150 * r.width) / DESIGN_W);
+        const near = cursors
+          .map((c) => {
+            const t = homeTip(c);
+            return { c, t, d: Math.hypot(px - t.x, py - t.y) };
+          })
+          .sort((a, b) => a.d - b.d);
+        const other = near.find((n) => n.c !== captured);
+        if (!captured && near[0].d < radius) capture(near[0].c);
+        else if (captured && other && other.d < radius) capture(other.c);
+
+        if (captured) {
+          const t = homeTip(captured);
+          captured.tx = px - t.x;
+          captured.ty = py - t.y;
         }
       };
 
@@ -208,15 +250,24 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         rx(0);
         ry(0);
         sh(30);
-        for (const f of followers) {
-          f.x(0);
-          f.y(0);
+        capture(null);
+      };
+
+      const tick = (_: number, deltaMs: number) => {
+        const dt = Math.min(deltaMs, 50) / 1000;
+        for (const c of cursors) {
+          const k = 1 - Math.exp(-dt * c.speed);
+          c.x += (c.tx - c.x) * k;
+          c.y += (c.ty - c.y) * k;
+          gsap.set(c.el, { x: c.x, y: c.y });
         }
       };
 
+      gsap.ticker.add(tick);
       el.addEventListener("pointermove", onMove);
       el.addEventListener("pointerleave", onLeave);
       return () => {
+        gsap.ticker.remove(tick);
         el.removeEventListener("pointermove", onMove);
         el.removeEventListener("pointerleave", onLeave);
       };
@@ -264,17 +315,18 @@ export default function HeroPlayground({ play }: { play: boolean }) {
           "-=0.5",
         );
 
-      // Gentle idle float on the cursors.
-      q(`.${styles.cursorFloat}`).forEach((c, i) => {
+      // Gentle idle float on the cursors (paused while one is "yours").
+      floatTweens.current = q(`.${styles.cursorFloat}`).map((c, i) =>
         gsap.to(c, {
+          delay: 2.2,
           y: i ? -8 : 8,
           rotation: i ? -3 : 3,
           duration: 2.4 + i * 0.4,
           ease: "sine.inOut",
           yoyo: true,
           repeat: -1,
-        });
-      });
+        }),
+      );
     },
     { dependencies: [play], scope: frame },
   );
@@ -306,7 +358,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
 
       <div ref={cursorA} className={`${styles.cursor} ${styles.cursorPurple}`} aria-hidden="true">
         <div className={`${styles.cursorInner} js-reveal`}>
-          <div className={styles.cursorFloat}>
+          <div className={styles.cursorFloat} data-float>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="assets/cursor-purple.png" alt="" draggable={false} />
           </div>
@@ -315,7 +367,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
       </div>
       <div ref={cursorB} className={`${styles.cursor} ${styles.cursorYellow}`} aria-hidden="true">
         <div className={`${styles.cursorInner} js-reveal`}>
-          <div className={styles.cursorFloat}>
+          <div className={styles.cursorFloat} data-float>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="assets/cursor-yellow.png" alt="" draggable={false} />
           </div>

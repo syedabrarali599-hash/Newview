@@ -8,7 +8,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: clamp(64px, 6.9vw, 100px) var(--section-x) clamp(56px, 7.4vw, 106px);
+  padding: 100px var(--section-x) 106px;
 }
 
 .sub {
@@ -16,15 +16,31 @@
 }
 
 .stack {
+  --panel-h: max(100svh, 600px);
   position: relative;
+}
+
+/* The illustration lives on one sticky stage above the cards, so it stays put
+   while the cards slide over each other underneath it. The track spans the
+   whole stack, so the stage leaves together with the last card. */
+.stageTrack {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: var(--panel-h);
 }
 
 /* Each card pins to the top; the next one slides up over it. */
 .card {
   position: sticky;
   top: 0;
-  height: 100svh;
-  min-height: 600px;
+  height: var(--panel-h);
 }
 
 .inner {
@@ -34,16 +50,6 @@
   background: var(--paper);
   border-top: 1px solid rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  transform-origin: 50% 0%;
-  will-change: transform;
-}
-
-.shade {
-  position: absolute;
-  inset: 0;
-  background: rgba(34, 13, 4, 0.14);
-  opacity: 0;
-  pointer-events: none;
 }
 
 .head {
@@ -80,6 +86,10 @@
   margin: auto;
 }
 
+.cardArt {
+  display: none;
+}
+
 .art {
   width: 100%;
   height: 100%;
@@ -111,8 +121,18 @@
     right: var(--section-x);
   }
 
-  .artWrap {
+  .stageTrack {
+    display: none;
+  }
+
+  .cardArt {
     --size: min(84vw, 44svh);
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    margin: auto;
   }
 
   .foot {

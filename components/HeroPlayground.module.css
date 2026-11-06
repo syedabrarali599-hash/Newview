@@ -188,3 +188,12 @@
     font-size: 10px;
   }
 }
+
+/* While a pixel cursor is "yours", hide the system pointer. */
+.frame[data-capturing="true"] {
+  cursor: none;
+}
+
+.cursor[data-captured="true"] {
+  z-index: 3;
+}

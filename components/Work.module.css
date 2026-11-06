@@ -2,7 +2,7 @@
   position: relative;
   z-index: 5;
   background: var(--cream);
-  padding: clamp(64px, 6.9vw, 100px) var(--section-x) clamp(80px, 6.9vw, 100px);
+  padding: 100px var(--section-x);
 }
 
 .header {
@@ -10,7 +10,8 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin-bottom: clamp(40px, 3.9vw, 56px);
+  max-width: 679px;
+  margin: 0 auto 56px;
 }
 
 .grid {
@@ -21,86 +22,114 @@
   margin: 0 auto;
 }
 
+/* Card geometry is expressed in "design px" of a 411px-wide card:
+   calc(N * var(--u)) so the whole card scales with its column. */
 .card {
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --u: calc(100cqw / 411);
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: block;
   aspect-ratio: 411 / 429;
   background: var(--paper);
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .media {
-  position: relative;
-  flex: 0 0 61.3%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(263 * var(--u));
   overflow: hidden;
-  background: #f1ede6;
+  background: #f0ede6;
 }
 
-.media img {
+.shot {
   position: absolute;
-  max-width: none;
   transform-origin: 30% 30%;
   transition: transform 1.1s var(--ease);
   will-change: transform;
 }
 
+.shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
 .desktop {
-  left: 5.84%;
-  top: 9.1%;
-  width: 103.6%;
-  height: auto;
-  border-radius: 4px;
-  box-shadow: 0 10px 30px rgba(34, 13, 4, 0.12);
+  left: calc(24 * var(--u));
+  top: calc(24 * var(--u));
+  width: calc(426 * var(--u));
+  height: calc(266 * var(--u));
+  border-radius: calc(10 * var(--u));
+  overflow: hidden;
+}
+
+.bordered::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #fff;
+  border-radius: inherit;
 }
 
 .phone {
-  left: 15.3%;
-  top: 11.4%;
-  width: 69.3%;
-  height: auto;
-  transform-origin: 50% 20%;
+  left: calc(63 * var(--u));
+  top: calc(30 * var(--u));
+  width: calc(285 * var(--u));
+  height: calc(583 * var(--u));
+  transform-origin: 50% 15%;
 }
 
-.card:hover .media img,
-.card:focus-visible .media img {
+.card:hover .shot,
+.card:focus-visible .shot {
   transform: scale(1.07);
 }
 
 .info {
+  position: absolute;
+  left: calc(24 * var(--u));
+  top: calc(287 * var(--u));
+  width: calc(363 * var(--u));
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 24px 24px 0;
+  gap: calc(5 * var(--u));
 }
 
 .title {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: clamp(20px, 1.67vw, 24px);
+  font-size: calc(24 * var(--u));
   line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--ink);
-  transition: color 0.5s var(--ease);
 }
 
 .body {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: max(13px, calc(16 * var(--u)));
+  line-height: 1.5;
+  letter-spacing: -0.01em;
   color: var(--ink-70);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: color 0.5s var(--ease);
 }
 
 .more {
-  margin-top: auto;
-  padding: 0 24px 24px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
+  position: absolute;
+  left: calc(24 * var(--u));
+  top: calc(385 * var(--u));
+  font-size: max(13px, calc(16 * var(--u)));
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--orange);
   transition: opacity 0.5s var(--ease);
 }
@@ -120,105 +149,111 @@
 
 /* ---------- "This spot is saved for you" ---------- */
 .saved {
-  --c: calc(100cqw / 21.6);
-  container-type: inline-size;
   background: var(--orange);
-  justify-content: flex-end;
-  transition: background-color 0.6s var(--ease);
 }
 
+/* 20px grid of 5% white hairlines, as in the design. */
 .savedGrid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
-  background-size: var(--c) var(--c);
-  transition: opacity 0.6s var(--ease);
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: calc(20 * var(--u)) calc(20 * var(--u));
+  background-position: calc(20.17 * var(--u)) 0;
 }
 
 .square {
   position: absolute;
-  width: var(--c);
-  aspect-ratio: 1;
-  background: rgba(255, 255, 255, 0.16);
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(19 * var(--u));
+  height: calc(19 * var(--u));
+  background: rgba(255, 255, 255, 0.17);
   transition:
-    background-color 0.6s var(--ease),
-    transform 0.8s var(--ease);
+    transform 0.7s var(--ease),
+    background-color 0.5s var(--ease);
 }
+
+/* On hover the pixels hop to neighbouring grid cells, one after another. */
+.saved:hover .square,
+.saved:focus-visible .square {
+  transform: translate(calc(var(--hx) * var(--u)), calc(var(--hy) * var(--u)));
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.square:nth-of-type(2) { transition-delay: 0.03s; }
+.square:nth-of-type(3) { transition-delay: 0.06s; }
+.square:nth-of-type(4) { transition-delay: 0.09s; }
+.square:nth-of-type(5) { transition-delay: 0.12s; }
+.square:nth-of-type(6) { transition-delay: 0.15s; }
+.square:nth-of-type(7) { transition-delay: 0.18s; }
+.square:nth-of-type(8) { transition-delay: 0.21s; }
+.square:nth-of-type(9) { transition-delay: 0.24s; }
+.square:nth-of-type(10) { transition-delay: 0.27s; }
 
 .circle {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: calc(24 * var(--u));
+  right: calc(24.33 * var(--u));
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  width: calc(56 * var(--u));
+  height: calc(56 * var(--u));
+  border-radius: 96px;
   background: #fff;
-  color: var(--orange);
-  transition:
-    background-color 0.6s var(--ease),
-    color 0.6s var(--ease),
-    transform 0.6s var(--ease);
-}
-
-.circle svg {
+  color: #180802;
+  overflow: hidden;
   transition: transform 0.6s var(--ease);
 }
 
-.savedInfo {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 24px;
+.circle svg {
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+  transition: transform 0.6s var(--ease);
 }
 
-.saved .title,
-.saved .body {
+/* The arrow shoots up and out, and a fresh one slides in from below. */
+.saved:hover .circle svg {
+  animation: arrow-out-in 0.7s var(--ease);
+}
+
+.saved:hover .circle {
+  transform: translateY(calc(-4 * var(--u)));
+}
+
+@keyframes arrow-out-in {
+  0% {
+    transform: translate(0, 0);
+  }
+  45% {
+    transform: translate(140%, -140%);
+  }
+  46% {
+    transform: translate(-140%, 140%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.savedInfo {
+  position: absolute;
+  left: calc(24 * var(--u));
+  top: calc(322 * var(--u));
+  width: calc(340 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+}
+
+.saved .title {
   color: #fff;
 }
 
 .saved .body {
   color: rgba(255, 255, 255, 0.85);
-}
-
-.saved:hover,
-.saved:focus-visible {
-  background: #fff;
-}
-
-.saved:hover .title,
-.saved:focus-visible .title {
-  color: var(--ink);
-}
-
-.saved:hover .body,
-.saved:focus-visible .body {
-  color: var(--ink-70);
-}
-
-.saved:hover .savedGrid {
-  opacity: 0.5;
-  filter: invert(1);
-}
-
-.saved:hover .square {
-  background: rgba(232, 83, 19, 0.12);
-  transform: scale(0.8);
-}
-
-.saved:hover .circle,
-.saved:focus-visible .circle {
-  background: var(--orange);
-  color: #fff;
-  transform: scale(1.06);
-}
-
-.saved:hover .circle svg {
-  transform: translate(2px, -2px);
+  -webkit-line-clamp: unset;
 }
 
 @media (max-width: 1024px) {
@@ -228,6 +263,10 @@
 }
 
 @media (max-width: 640px) {
+  .work {
+    padding-block: 72px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
     gap: 16px;

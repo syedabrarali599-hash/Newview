@@ -40,7 +40,6 @@ export default function Hero() {
 
   return (
     <section ref={root} id="top" className={styles.hero}>
-      <div className={styles.lines} aria-hidden="true" />
       <div className={styles.top}>
         <Heading as="h1" className={styles.title} immediate play={ready} delay={0.25}>
           Every brand,

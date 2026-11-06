@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { CONTACT_HREF } from "@/lib/site";
 import styles from "./Process.module.css";
@@ -12,39 +12,16 @@ const STEPS = [
   { n: "[ 04 ]", text: "Deliver and hand over", side: "right" },
 ] as const;
 
+/** The "Let's Make It Happen" frame, exactly as designed: a white box with
+ *  four corner handles. Hover fills it with pixels and nudges the handles
+ *  outwards, like grabbing a frame to resize it. */
 function MakeItHappen() {
-  const box = useRef<HTMLAnchorElement>(null);
-  const [size, setSize] = useState("946 × 340");
-
-  // Live dimensions in the Figma-style size badge.
-  useEffect(() => {
-    const el = box.current!;
-    const ro = new ResizeObserver(([e]) => {
-      const { width, height } = e.contentRect;
-      setSize(`${Math.round(width)} × ${Math.round(height)}`);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   return (
-    <a ref={box} href={CONTACT_HREF} className={`${styles.box} js-reveal`} data-happen>
-      <span className={styles.frameName} aria-hidden="true">
-        Frame · Your next project
-      </span>
-      <span className={styles.selection} aria-hidden="true" />
+    <a href={CONTACT_HREF} className={`${styles.box} js-reveal`} data-happen data-pixel-hover>
       {(["tl", "tr", "bl", "br"] as const).map((c) => (
         <span key={c} className={`${styles.handle} ${styles[c]}`} aria-hidden="true" />
       ))}
-      <span className={styles.boxText}>
-        Let&apos;s Make It Happen
-        <span className={styles.boxArrow} aria-hidden="true">
-          →
-        </span>
-      </span>
-      <span className={styles.dims} aria-hidden="true">
-        {size}
-      </span>
+      <span className={styles.boxText}>Let&apos;s Make It Happen</span>
     </a>
   );
 }
@@ -112,7 +89,7 @@ export default function Process() {
       gsap
         .timeline({ scrollTrigger: { trigger: happen, start: "top 80%", once: true } })
         .fromTo(happen, { autoAlpha: 0, scale: 0.86, y: 40 }, { autoAlpha: 1, scale: 1, y: 0, duration: 1.3, ease: EASE.expo })
-        .from(q(`.${styles.handle}`), { scale: 0, duration: 0.5, ease: "back.out(3)", stagger: 0.07 }, "-=0.8")
+        .from(q(`.${styles.handle}`), { scale: 0, duration: 0.5, ease: "back.out(3)", stagger: 0.07, clearProps: "transform" }, "-=0.8")
         .from(q(`.${styles.boxText}`), { yPercent: 60, autoAlpha: 0, filter: "blur(8px)", duration: 1, ease: EASE.out }, "-=0.7");
     },
     { scope: root },

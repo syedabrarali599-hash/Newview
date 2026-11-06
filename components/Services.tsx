@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef } from "react";
-import { gsap, SplitText, ScrollTrigger, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { revealHeading, fadeUp } from "@/lib/animations";
+import { useCallback, useRef } from "react";
+import { gsap, ScrollTrigger, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
+import { revealHeading, revealLines } from "@/lib/animations";
 import { CONTACT_EMAIL } from "@/lib/site";
 import Heading from "./Heading";
-import PixelArt, { type PixelArtHandle, type PixelBehavior } from "./PixelArt";
-import { ghost, cherry, potion, heart, type PixelArtData } from "./pixelArt.data";
+import PixelCanvas, { type PixelCanvasHandle, type Scene } from "./PixelCanvas";
+import { nib, browser, blocks, megaphone } from "./pixelArt.data";
 import styles from "./Services.module.css";
 
 type Service = {
@@ -14,9 +14,6 @@ type Service = {
   title: string;
   body: string;
   cta: string;
-  art: PixelArtData;
-  behavior: PixelBehavior;
-  label: string;
 };
 
 const SERVICES: Service[] = [
@@ -25,55 +22,45 @@ const SERVICES: Service[] = [
     title: "Brand Identity",
     body: "Logos, visual systems, color, and typography that define how your brand shows up.",
     cta: "Build your brand",
-    art: ghost,
-    behavior: "ghost",
-    label: "Pixel-art orange ghost whose eyes follow your cursor",
   },
   {
     index: "[ 02 ]",
     title: "Web & App UI Design",
     body: "Clean, modern interfaces designed for clarity, usability, and strong visual impact.",
     cta: "Design your product",
-    art: cherry,
-    behavior: "cherry",
-    label: "Pixel-art pair of cherries swaying on their stem",
   },
   {
     index: "[ 03 ]",
     title: "Design Systems",
     body: "Scalable components and guidelines that keep your product consistent as it grows.",
     cta: "Scale with a system",
-    art: potion,
-    behavior: "potion",
-    label: "Pixel-art bubbling potion bottle",
   },
   {
     index: "[ 04 ]",
     title: "Marketing & Creative Assets",
     body: "Landing pages, social visuals, and campaign assets that support launches and day-to-day needs.",
     cta: "Launch a campaign",
-    art: heart,
-    behavior: "heart",
-    label: "Pixel-art beating heart",
   },
 ];
+
+const ARTS = [nib, browser, blocks, megaphone];
+const onlyFirstScattered = (i: number) => i === 0;
 
 const mailto = (s: Service) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${s.title} project`)}`;
 
 function ServiceCard({ service, i }: { service: Service; i: number }) {
   const card = useRef<HTMLElement>(null);
-  const art = useRef<PixelArtHandle>(null);
+  const pixels = useRef<PixelCanvasHandle>(null);
+  const arts = useRef([ARTS[i]]).current;
 
   useGSAP(
     () => {
       const el = card.current!;
       const q = gsap.utils.selector(el);
-      const assemble = () => art.current?.assemble();
-
       if (prefersReducedMotion()) {
         gsap.set(q(".js-reveal"), { autoAlpha: 1 });
-        assemble();
+        pixels.current?.assemble();
         return;
       }
 
@@ -85,15 +72,14 @@ function ServiceCard({ service, i }: { service: Service; i: number }) {
 
       gsap
         .timeline({ scrollTrigger: { trigger: el, start: "top 55%", once: true } })
-        .add(assemble, 0)
+        .add(() => pixels.current?.assemble(), 0)
         .fromTo(q(`.${styles.index}`), { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 0)
-        .fromTo(q(`.${styles.artWrap}`), { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 1.4, ease: EASE.expo }, 0)
-        .from(lines.lines, { yPercent: 105, duration: 1, stagger: 0.08 }, 0.35)
+        .from(lines.lines, { yPercent: 105, duration: 1, stagger: 0.08 }, 0.3)
         .fromTo(
           q(`.${styles.cta}`),
           { autoAlpha: 0, clipPath: "inset(0 100% 0 0)" },
           { autoAlpha: 1, clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: EASE.inOut },
-          0.6,
+          0.55,
         );
     },
     { scope: card },
@@ -101,30 +87,21 @@ function ServiceCard({ service, i }: { service: Service; i: number }) {
 
   return (
     <article ref={card} className={styles.card} style={{ zIndex: i + 1 }} data-card>
-      <div className={styles.inner} data-card-inner>
-        <div className={styles.head}>
+      <div className={styles.inner}>
+        <div className={styles.head} data-card-head>
           <p className={`${styles.index} js-reveal`}>{service.index}</p>
           <h3 className={`${styles.title} js-reveal`}>{service.title}</h3>
         </div>
-
-        <div className={`${styles.artWrap} js-reveal`}>
-          <PixelArt
-            ref={art}
-            art={service.art}
-            behavior={service.behavior}
-            host={card}
-            className={styles.art}
-            label={service.label}
-          />
+        {/* Small screens: each card carries its own illustration. */}
+        <div className={styles.cardArt}>
+          <PixelCanvas ref={pixels} arts={arts} host={card} grid className={styles.art} label={service.title} />
         </div>
-
-        <div className={styles.foot}>
+        <div className={styles.foot} data-card-foot>
           <p className={`${styles.body} js-reveal`}>{service.body}</p>
           <a href={mailto(service)} className={`btn ${styles.cta} js-reveal`}>
             {service.cta} <span className="btn-arrow">→</span>
           </a>
         </div>
-        <div className={styles.shade} data-card-shade aria-hidden="true" />
       </div>
     </article>
   );
@@ -132,27 +109,59 @@ function ServiceCard({ service, i }: { service: Service; i: number }) {
 
 export default function Services() {
   const root = useRef<HTMLElement>(null);
+  const stack = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const artWrap = useRef<HTMLDivElement>(null);
+  const pixels = useRef<PixelCanvasHandle>(null);
 
-  // Stacking depth: as the next card slides over, the one below sinks back.
+  /**
+   * The art stays put while the cards stack over each other. While a card is
+   * sliding up, its top edge is the "line": the previous art shows above it,
+   * the new art below it, with a glitch band in between.
+   */
+  const scene = useCallback((): Scene => {
+    const cards = stack.current?.querySelectorAll<HTMLElement>("[data-card]");
+    if (!cards || !stage.current || !artWrap.current) return { a: 0 };
+    const s = stage.current.getBoundingClientRect();
+    const artTop = artWrap.current.getBoundingClientRect().top;
+    let current = 0;
+    for (let i = 1; i < cards.length; i++) {
+      const top = cards[i].getBoundingClientRect().top;
+      if (top <= s.top + 0.5) current = i;
+      else if (top < s.bottom) return { a: i - 1, b: i, line: top - artTop };
+    }
+    return { a: current };
+  }, []);
+
   useGSAP(
     () => {
-      fadeUp(`.${styles.sub}`, { trigger: root.current!.querySelector(`.${styles.header}`)!, start: "top 85%", delay: 0.45 });
-      if (prefersReducedMotion()) return;
-      const cards = gsap.utils.toArray<HTMLElement>("[data-card]", root.current);
+      const q = gsap.utils.selector(root);
+      revealLines(q(`.${styles.sub}`)[0] as HTMLElement, { trigger: q(`.${styles.header}`)[0] });
 
-      cards.forEach((card, i) => {
-        const next = cards[i + 1];
-        if (!next) return;
-        const inner = card.querySelector("[data-card-inner]");
-        const shade = card.querySelector("[data-card-shade]");
-        gsap
-          .timeline({
-            scrollTrigger: { trigger: next, start: "top bottom", end: "top top", scrub: true },
-          })
-          .to(inner, { scale: 0.92, yPercent: -2, ease: "none" }, 0)
-          .to(shade, { opacity: 1, ease: "none" }, 0);
+      if (prefersReducedMotion()) {
+        pixels.current?.assemble(0);
+        return;
+      }
+
+      // The first illustration flies together pixel by pixel.
+      ScrollTrigger.create({
+        trigger: stack.current,
+        start: "top 60%",
+        once: true,
+        onEnter: () => pixels.current?.assemble(0),
       });
-      ScrollTrigger.refresh();
+
+      // As each card slides in, the previous card's copy greys out.
+      const cards = gsap.utils.toArray<HTMLElement>("[data-card]", stack.current);
+      cards.forEach((card, i) => {
+        const prev = cards[i - 1];
+        if (!prev) return;
+        gsap.to(prev.querySelectorAll("[data-card-head], [data-card-foot]"), {
+          opacity: 0.25,
+          ease: "none",
+          scrollTrigger: { trigger: card, start: "top bottom", end: "top top", scrub: true },
+        });
+      });
     },
     { scope: root },
   );
@@ -168,7 +177,24 @@ export default function Services() {
           perform.
         </p>
       </header>
-      <div className={styles.stack}>
+
+      <div ref={stack} className={styles.stack}>
+        <div className={styles.stageTrack}>
+          <div ref={stage} className={styles.stage}>
+            <div ref={artWrap} className={styles.artWrap}>
+              <PixelCanvas
+                ref={pixels}
+                arts={ARTS}
+                host={stack}
+                grid
+                scene={scene}
+                scattered={onlyFirstScattered}
+                className={styles.art}
+                label="Pixel illustrations for each service: a pen nib, a browser window, design-system tiles and a megaphone"
+              />
+            </div>
+          </div>
+        </div>
         {SERVICES.map((s, i) => (
           <ServiceCard key={s.title} service={s} i={i} />
         ))}

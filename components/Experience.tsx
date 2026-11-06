@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import { ExperienceContext } from "@/lib/experience";
+import { initPixelHover } from "@/lib/pixelHover";
 import Loader from "./Loader";
 import Nav from "./Nav";
 import Hero from "./Hero";
@@ -26,6 +27,9 @@ export default function Experience() {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
   }, []);
+
+  // Pixel-fill hover on every CTA.
+  useEffect(() => initPixelHover(), []);
 
   // Lenis drives the scroll; GSAP's ticker drives Lenis so both stay in sync.
   useEffect(() => {

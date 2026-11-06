@@ -69,7 +69,6 @@ export default function Loader({ onReveal }: Props) {
           .to(progress, { v: 100, duration: 0.7, ease: "power2.inOut", onUpdate: render })
           .to(`.${styles.countInner}`, { yPercent: -110, duration: 0.8, ease: "expo.in" }, "+=0.15")
           .to(`.${styles.bar}`, { scaleX: 0, transformOrigin: "right", duration: 0.6, ease: "expo.in" }, "<0.1")
-          .to(`.${styles.lines}`, { autoAlpha: 0, duration: 0.5 }, "<")
           .to(
             `.${styles.panelFill}`,
             { scaleY: 1, duration: 0.7, ease: "expo.inOut", stagger: 0.07 },
@@ -101,7 +100,6 @@ export default function Loader({ onReveal }: Props) {
           </span>
         ))}
       </div>
-      <div className={styles.lines} />
       <div className={styles.center}>
         <div className={styles.countMask}>
           <div className={styles.countInner}>

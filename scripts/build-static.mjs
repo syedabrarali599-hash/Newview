@@ -1,7 +1,8 @@
 // Bundles the site into a single self-contained index.html (+ fonts and images)
 // that can be hosted anywhere static files are served, under any base path.
+// Fonts and images come from /resources and are fingerprinted into assets/.
 import { build } from "esbuild";
-import { cp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const out = "dist-static";
@@ -18,8 +19,15 @@ const result = await build({
   write: false,
   outdir: out,
   publicPath: ".",
-  assetNames: "fonts/[name]-[hash]",
-  loader: { ".woff2": "file", ".woff": "file" },
+  assetNames: "assets/[name]-[hash]",
+  loader: {
+    ".woff2": "file",
+    ".woff": "file",
+    ".png": "file",
+    ".jpg": "file",
+    ".webp": "file",
+    ".svg": "file",
+  },
   define: { "process.env.NODE_ENV": '"production"' },
   tsconfig: "tsconfig.json",
   logLevel: "error",
@@ -48,6 +56,4 @@ const html = `<title>New View</title>
 <script>${js}</script>
 `;
 await writeFile(path.join(out, "index.html"), html);
-await cp("public/assets", path.join(out, "assets"), { recursive: true });
-await cp("public/work", path.join(out, "work"), { recursive: true });
 console.log(`Built ${out}/index.html (${(html.length / 1024).toFixed(0)} KB)`);

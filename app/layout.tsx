@@ -1,15 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/newsreader/opsz.css";
-import "@fontsource-variable/inter-tight/index.css";
-import "@fontsource-variable/inter/index.css";
-import "@fontsource/carlito/latin-700.css";
+import "@/resources/fonts/fonts.css";
 import "./globals.css";
+import logoMark from "@/resources/images/logo-mark.svg";
 
 export const metadata: Metadata = {
   title: "New View — Every brand needs a new view",
   description:
     "New View brings experienced designers directly to your team. Brand identity, web & app UI, design systems and marketing assets — without agency layers.",
-  icons: { icon: "/assets/logo-mark.svg" },
+  icons: { icon: logoMark.src },
 };
 
 export const viewport: Viewport = {

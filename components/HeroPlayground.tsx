@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
+import { ASSETS } from "@/lib/assets";
 import styles from "./HeroPlayground.module.css";
 
 const DESIGN_W = 1336;
@@ -340,7 +341,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         <div className={styles.glassesInner}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="assets/hero-glasses.png"
+            src={ASSETS.heroGlasses}
             alt="Pixel-art sunglasses: one lens shows a grey landscape, the other a bright sunny one — a new view."
             width={1838}
             height={856}
@@ -350,7 +351,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
           <div
             ref={shine}
             className={styles.shine}
-            style={{ WebkitMaskImage: "url(assets/hero-glasses.png)", maskImage: "url(assets/hero-glasses.png)" }}
+            style={{ WebkitMaskImage: `url(${ASSETS.heroGlasses})`, maskImage: `url(${ASSETS.heroGlasses})` }}
             aria-hidden="true"
           />
         </div>
@@ -360,7 +361,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         <div className={`${styles.cursorInner} js-reveal`}>
           <div className={styles.cursorFloat} data-float>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="assets/cursor-purple.png" alt="" draggable={false} />
+            <img src={ASSETS.cursorPurple} alt="" draggable={false} />
           </div>
           <span className={`${styles.tag} ${styles.tagPurple}`}>Designer</span>
         </div>
@@ -369,7 +370,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         <div className={`${styles.cursorInner} js-reveal`}>
           <div className={styles.cursorFloat} data-float>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="assets/cursor-yellow.png" alt="" draggable={false} />
+            <img src={ASSETS.cursorYellow} alt="" draggable={false} />
           </div>
           <span className={`${styles.tag} ${styles.tagYellow}`}>Product team</span>
         </div>

@@ -19,12 +19,10 @@
   --section-x: clamp(20px, 5.56vw, 80px);
   --maxw: 1440px;
 
-  /* "Season Mix" is the licensed display face from the design. Newsreader is
-     the closest open-source match and is used until the licensed files are
-     added (see README). */
-  --font-display: "Season Mix", "Newsreader Variable", Georgia, "Times New Roman", serif;
-  --font-body: "Inter Tight Variable", "Inter Tight", system-ui, sans-serif;
-  --font-ui: "Inter Variable", "Inter", system-ui, sans-serif;
+  /* Fonts are self-hosted from /resources/fonts (see fonts.css there). */
+  --font-display: "Season Mix", Georgia, "Times New Roman", serif;
+  --font-body: "Inter Tight", system-ui, sans-serif;
+  --font-ui: "Inter", system-ui, sans-serif;
   --font-logo: Calibri, "Carlito", sans-serif;
 
   --h-section: clamp(36px, 3.9vw, 56px);

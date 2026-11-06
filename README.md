@@ -10,7 +10,7 @@ The New View studio landing page, built from the **Final Webiste Themes** page i
 | Animation | **GSAP 3.15** + **ScrollTrigger** + **SplitText** | Industry standard for timeline and scroll choreography; SplitText powers the word and line reveals. |
 | Smooth scroll | **Lenis** | Subtle, natural-feeling inertia, driven by GSAP's ticker so ScrollTrigger stays in sync. |
 | Interactivity | Canvas 2D + SVG | Pixel-art particles, the hero pixel trail and the CTA illustration, with no heavy WebGL dependency. |
-| Fonts | Self-hosted via Fontsource | No network dependency at build time. |
+| Fonts | Self-hosted from `resources/fonts` | Season Mix (display), Inter Tight (body), Inter (nav), Carlito (logo); no network dependency. |
 
 ## Run it
 
@@ -57,9 +57,13 @@ The design's placeholder button labels were replaced:
 
 The work cards all shared the same truncated placeholder description, so each now has its own one-liner. The "without New View" list is new copy for the toggle.
 
+## Resources folder
+
+All fonts and images are kept in `resources/` at the project root — add any new image or font there. Images are imported in `lib/assets.ts` (the bundler fingerprints and serves them); fonts are declared in `resources/fonts/fonts.css`.
+
 ## Things to swap in
 
-- **Display font** – the design uses *Season Mix* (a licensed trial font). The site falls back to Newsreader, the closest open-source match. To use the real font, add the files to `public/fonts/` and an `@font-face` named `"Season Mix"` in `app/globals.css`; it's already first in `--font-display`.
+- **Fonts** – everything lives in `resources/fonts` (declared in `resources/fonts/fonts.css`). Season Mix Regular and Medium come from `season-font-family.zip` (also kept there) and were converted to WOFF2. That download is a *trial, personal-use-only* licence — buy the commercial licence before the site goes live.
 - **Pixel illustrations** – drawn in `scripts/gen-pixel-art.py`; run `python3 scripts/gen-pixel-art.py` after editing to regenerate `components/pixelArt.data.ts`.
 - **Links** – CTAs open an email to `hello@newview.co` (see `lib/site.ts`). The social links point to each network's home page, and the "View Project" links scroll to the work section.
 
@@ -71,7 +75,9 @@ components/     one component (+ CSS module) per section
   PixelArt.tsx       interactive canvas pixel-art engine
   pixelArt.data.ts   32×32 pixel data sampled from the Figma art
   HeroPlayground.tsx hero grid trail, glasses tilt, follower cursors
-lib/            GSAP setup, shared animations, site constants
-public/assets   images exported from Figma
-public/work     project thumbnails (placeholders)
+lib/            GSAP setup, shared animations, site constants, assets.ts
+                (assets.ts imports each image from resources/images)
+resources/
+  fonts/        all web fonts + fonts.css (and the original font zip)
+  images/       every image the site uses (hero, cursors, logo, work/…)
 ```

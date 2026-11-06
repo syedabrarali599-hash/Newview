@@ -8,9 +8,9 @@
 .frame {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 457fr) minmax(0, 657fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 657px);
   align-items: center;
-  gap: clamp(24px, 5.4vw, 76px);
+  gap: clamp(24px, 4vw, 56px);
   max-width: 1280px;
   min-height: clamp(300px, 25vw, 360px);
   margin: 0 auto;
@@ -106,7 +106,7 @@
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: #fff;
-  max-width: 457px;
+  max-width: 470px;
 }
 
 .button {

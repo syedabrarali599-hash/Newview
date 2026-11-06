@@ -5,6 +5,7 @@ import { gsap, ScrollTrigger, useGSAP, EASE, prefersReducedMotion } from "@/lib/
 import { revealLines } from "@/lib/animations";
 import { CONTACT_HREF } from "@/lib/site";
 import Heading from "./Heading";
+import { ASSETS } from "@/lib/assets";
 import styles from "./Work.module.css";
 
 type Project = {
@@ -21,21 +22,21 @@ const PROJECTS: Project[] = [
   {
     title: "Agentic Chatbot UI",
     body: "A clean, intelligent chatbot interface designed to handle complex conversations without friction.",
-    images: ["work/agentic.webp"],
+    images: [ASSETS.work.agentic],
     kind: "desktop",
     href: "#work",
   },
   {
     title: "Gibili App",
     body: "A friendly mobile experience that helps people find exactly what they need in a few taps.",
-    images: ["work/phone.webp"],
+    images: [ASSETS.work.phone],
     kind: "phone",
     href: "#work",
   },
   {
     title: "Seeneemaa",
     body: "A calm, conversion-focused sign-up flow that gets new members on board in under a minute.",
-    images: ["work/agentic.webp", "work/seeneemaa.webp"],
+    images: [ASSETS.work.agentic, ASSETS.work.seeneemaa],
     kind: "desktop",
     bordered: true,
     href: "#work",
@@ -43,14 +44,14 @@ const PROJECTS: Project[] = [
   {
     title: "Tepigo",
     body: "A search-first quick-commerce app built for speed, clarity, and effortless repeat orders.",
-    images: ["work/phone.webp"],
+    images: [ASSETS.work.phone],
     kind: "phone",
     href: "#work",
   },
   {
     title: "Oqualem",
     body: "A travel landing page that turns a simple promise into a clear, confident first impression.",
-    images: ["work/agentic.webp", "work/oqualem.webp"],
+    images: [ASSETS.work.agentic, ASSETS.work.oqualem],
     kind: "desktop",
     href: "#work",
   },

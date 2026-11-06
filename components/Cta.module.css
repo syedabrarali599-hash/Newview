@@ -113,8 +113,8 @@
   font-size: 18px;
 }
 
-/* The Figma image box (657 × 328); the drawing sits inside it with the same
-   breathing room as the original illustration. */
+/* The Figma image box (657 × 328). The canvas fills it and the drawing sits
+   where the original illustration does, across the middle of the box. */
 .art {
   position: relative;
   z-index: 1;
@@ -124,7 +124,7 @@
 }
 
 .illo {
-  width: 82%;
+  width: 100%;
   aspect-ratio: 42 / 21;
   height: auto;
 }

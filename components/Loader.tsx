@@ -69,16 +69,11 @@ export default function Loader({ onReveal }: Props) {
           .to(progress, { v: 100, duration: 0.7, ease: "power2.inOut", onUpdate: render })
           .to(`.${styles.countInner}`, { yPercent: -110, duration: 0.8, ease: "expo.in" }, "+=0.15")
           .to(`.${styles.bar}`, { scaleX: 0, transformOrigin: "right", duration: 0.6, ease: "expo.in" }, "<0.1")
-          .to(
-            `.${styles.panelFill}`,
-            { scaleY: 1, duration: 0.7, ease: "expo.inOut", stagger: 0.07 },
-            "-=0.15",
-          )
-          .add(() => onReveal(), "-=0.2")
+          .add(() => onReveal(), "-=0.1")
           .to(
             `.${styles.panel}`,
             { yPercent: -100, duration: 0.95, ease: "expo.inOut", stagger: 0.07 },
-            "-=0.45",
+            "-=0.25",
           );
       });
 
@@ -95,9 +90,7 @@ export default function Loader({ onReveal }: Props) {
     <div ref={root} className={styles.loader} data-loader aria-hidden="true">
       <div className={styles.panels}>
         {Array.from({ length: PANELS }, (_, i) => (
-          <span key={i} className={styles.panel}>
-            <span className={styles.panelFill} />
-          </span>
+          <span key={i} className={styles.panel} />
         ))}
       </div>
       <div className={styles.center}>

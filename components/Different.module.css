@@ -93,8 +93,8 @@
   box-shadow: 0 4px 12px rgba(232, 83, 19, 0.45);
   transform: translateX(42px);
   transition:
-    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
-    filter 0.5s ease;
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.3s ease;
 }
 
 .toggle[aria-checked="false"] .knob {
@@ -102,9 +102,6 @@
   filter: grayscale(1);
 }
 
-.toggle:active .knob {
-  width: 42px;
-}
 
 .card {
   width: min(532px, 100%);

@@ -44,7 +44,6 @@ const SERVICES: Service[] = [
 ];
 
 const ARTS = [nib, browser, blocks, megaphone];
-const onlyFirstScattered = (i: number) => i === 0;
 
 const mailto = (s: Service) =>
   `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${s.title} project`)}`;
@@ -139,16 +138,25 @@ export default function Services() {
       revealLines(q(`.${styles.sub}`)[0] as HTMLElement, { trigger: q(`.${styles.header}`)[0] });
 
       if (prefersReducedMotion()) {
-        pixels.current?.assemble(0);
+        ARTS.forEach((_, i) => pixels.current?.assemble(i));
         return;
       }
 
-      // The first illustration flies together pixel by pixel.
+      // Each illustration gathers pixel by pixel as its card arrives.
       ScrollTrigger.create({
         trigger: stack.current,
         start: "top 60%",
         once: true,
         onEnter: () => pixels.current?.assemble(0),
+      });
+      gsap.utils.toArray<HTMLElement>("[data-card]", stack.current).forEach((card, i) => {
+        if (i === 0) return;
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top 80%",
+          once: true,
+          onEnter: () => pixels.current?.assemble(i),
+        });
       });
 
       // As each card slides in, the previous card's copy greys out.
@@ -188,7 +196,6 @@ export default function Services() {
                 host={stack}
                 grid
                 scene={scene}
-                scattered={onlyFirstScattered}
                 className={styles.art}
                 label="Pixel illustrations for each service: a pen nib, a browser window, design-system tiles and a megaphone"
               />

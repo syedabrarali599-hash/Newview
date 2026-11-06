@@ -311,48 +311,59 @@ S_.sprite(2, 2, SPARK_S); S_.sprite(21, 6, SPARK_S)
 arts["rocket"] = a
 
 # ---------- CTA: idea -> wireframe -> final design ----------
-a = Art(42, 21)
+# Minimal version on the Figma image box (657 x 328 px -> 84 x 42 cells of
+# ~7.8px). Elements sit where they are in the original illustration: a band
+# roughly 540 x 165 px across the middle of the box.
+a = Art(84, 42)
 Rays = a.layer("rays")
-for (x0, y0, x1, y1) in [(7, 0, 7, 0), (8, 0, 8, 0), (2, 2, 3, 3), (13, 2, 12, 3), (0, 7, 1, 7), (14, 7, 15, 7), (2, 12, 3, 11), (13, 12, 12, 11)]:
-    Rays.line(x0, y0, x1, y1, "y")
+for (x, y) in [(18, 6), (24, 8), (26, 14), (24, 21), (12, 8), (10, 14)]:
+    Rays.set(x, y, "y")
 Bulb = a.layer("bulb")
-Bulb.ellipse(7.5, 6.5, 4.4, 4.6, "y")
-Bulb.rect(5, 10, 9, 11, "y")
-Bulb.rect(5, 12, 9, 14, "g"); Bulb.rect(6, 15, 8, 15, "G")
+Bulb.ellipse(18.5, 14.5, 4.6, 5.0, "y")
+Bulb.rect(16, 19, 20, 20, "y")
+Bulb.rect(16, 21, 20, 23, "g")
 Bulb.outline("k")
-Bulb.rect(5, 13, 9, 13, "k")
-Bulb.set(5, 4, "w"); Bulb.set(5, 5, "w"); Bulb.set(6, 3, "w")
-Bulb.line(6, 9, 7, 8, "Y"); Bulb.line(8, 8, 9, 9, "Y"); Bulb.line(7, 8, 7, 11, "Y")
-Ar1 = a.layer("arrow1")
-for x in range(14, 18):
-    Ar1.set(x, 9, "w")
-Ar1.set(17, 8, "w"); Ar1.set(17, 10, "w")
-W1 = a.layer("win1")
-W1.rect(19, 5, 27, 14, "w"); W1.outline("k")
-W1.rect(19, 6, 27, 6, "k"); W1.set(19, 5, "k"); W1.set(20, 5, "w")
-for x in (20, 22):
-    W1.set(x, 5, "k")
-W1.rect(20, 8, 23, 11, "w")
-for (x, y) in [(20, 8), (22, 8), (20, 10), (23, 9), (23, 11), (21, 11)]:
-    W1.set(x, y, "k")
-W1.rect(25, 8, 26, 8, "o"); W1.rect(25, 10, 26, 10, "g"); W1.rect(20, 13, 24, 13, "g")
-Ar2 = a.layer("arrow2")
-for x in range(28, 31):
-    Ar2.set(x, 9, "w")
-Ar2.set(30, 8, "w"); Ar2.set(30, 10, "w")
-W2 = a.layer("win2")
-W2.rect(32, 4, 39, 15, "w"); W2.outline("k")
-W2.rect(32, 5, 39, 5, "k")
-W2.rect(33, 7, 38, 10, "y")
-W2.poly([(33, 11), (33, 10), (35, 8), (36.5, 9.5), (37.5, 8.5), (39, 10), (39, 11)], "o")
-W2.set(37, 7, "w")
-W2.rect(33, 12, 35, 13, "o"); W2.rect(37, 12, 38, 12, "g"); W2.rect(37, 14, 38, 14, "g")
+Bulb.rect(16, 22, 20, 22, "k")
+Bulb.set(16, 12, "w"); Bulb.set(16, 13, "w"); Bulb.set(17, 11, "w")
 Cu = a.layer("cursor")
-Cu.sprite(0, 16, CURSOR[:5], flip=True)
+Cu.sprite(7, 22, CURSOR[:6], flip=True)
+
+
+def arrow(layer, dots, head):
+    # dotted shaft "▪ ▪" and a solid triangular head pointing right
+    for x in dots:
+        layer.set(x, 17, "k")
+    for dy, w in [(-2, 1), (-1, 2), (0, 3), (1, 2), (2, 1)]:
+        for dx in range(w):
+            layer.set(head + dx, 17 + dy, "k")
+
+
+Ar1 = a.layer("arrow1")
+arrow(Ar1, (25, 27), 29)
+W1 = a.layer("win1")
+W1.rect(34, 12, 47, 22, "w"); W1.outline("k")
+for x in (35, 37, 39):
+    W1.set(x, 12, "g")
+W1.rect(34, 13, 47, 13, "k")
+W1.frame(36, 15, 41, 20, "g")
+W1.line(37, 19, 38, 17, "g"); W1.line(38, 17, 40, 19, "g")
+W1.rect(43, 15, 45, 15, "y"); W1.rect(43, 17, 45, 17, "g"); W1.rect(43, 19, 45, 19, "g")
+Ar2 = a.layer("arrow2")
+arrow(Ar2, (50,), 52)
+W2 = a.layer("win2")
+W2.rect(57, 10, 71, 24, "w"); W2.outline("k")
+for x in (58, 60, 62):
+    W2.set(x, 10, "g")
+W2.rect(57, 11, 71, 11, "k")
+W2.rect(59, 13, 69, 19, "y")
+W2.poly([(59, 20), (59, 19), (62, 15.5), (64.5, 18), (66, 16.5), (69, 19.5), (69, 20)], "k")
+W2.rect(66, 14, 67, 15, "w")
+W2.rect(59, 22, 62, 22, "g")
+W2.rect(65, 21, 69, 22, "y")
 Cl = a.layer("click")
-Cl.sprite(36, 13, CURSOR[:8], mapping={"w": "y"})
+Cl.sprite(69, 22, CURSOR[:8], mapping={"w": "y"})
 Sp = a.layer("spark")
-Sp.set(1, 1, "y"); Sp.set(40, 1, "y"); Sp.set(17, 16, "w"); Sp.set(29, 17, "y")
+Sp.set(53, 7, "y"); Sp.set(76, 9, "y"); Sp.set(53, 27, "y"); Sp.set(75, 17, "w")
 arts["idea"] = a
 
 out = {k: v.export(k) for k, v in arts.items()}

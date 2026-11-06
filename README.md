@@ -27,17 +27,18 @@ which is how the hosted preview is published.
 
 ## What's animated
 
-- **Loader** – counter and progress bar, then six orange panels wipe up (seamlessly, no hairlines) to reveal the page.
+- **Loader** – brand orange from the first frame: a cream counter and progress bar, then six orange panels wipe up (seamlessly, no hairlines) to reveal the page.
 - **Hero** – nav drops in; the headline reveals word by word (fade 0 → 100%, blur → sharp); copy rises line by line; the button wipes in. In the glasses frame the grid lights up in brand-orange pixels under the cursor (click for a ripple), the glasses tilt in 3D, and moving towards either pixel cursor makes it *your* cursor (one at a time).
 - **About** – both paragraphs sit at 50% opacity and fill in line by line as you scroll.
 - **Section headings & subcopy** – every heading uses the same word-by-word reveal; subcopy rises line by line.
-- **Services** – the four cards stack (sticky). The pixel illustration stays in place while the next card's top edge sweeps up: the old art shows above the line, the new art below it, with a glitchy scan-line band where they meet, and the previous card's copy greys out. The first illustration flies together pixel by pixel. All four illustrations are original pixel art (pen nib, browser window, design-system tiles, megaphone) and react to the cursor. On phones each card carries its own illustration.
+- **Services** – the four cards stack (sticky). The pixel illustration stays in place while the next card's top edge sweeps up: the old art shows above the line, the new art below it, with a glitchy scan-line band where they meet, and the previous card's copy greys out. Each illustration gathers gently, pixel by pixel, as its card arrives. All four illustrations are original pixel art (pen nib, browser window, design-system tiles, megaphone) and react to the cursor. On phones each card carries its own illustration.
 - **Work** – the real project images from Figma; cards appear one after another; on hover the image zooms and the arrow nudges right. On the orange "saved for you" card the pixels hop to new grid cells and the arrow shoots up and back in.
 - **Process** – the orange panel rises from the bottom while scaling up to fill the viewport; the statement arrives from the right; each step slides in from its own side. "Let's Make It Happen" keeps the exact design (white frame, corner handles); on hover the handles stretch outwards and pixels fill the frame black.
 - **Getting started** – cards fade up in sequence; each pixel illustration (chat, checklist, rocket) assembles on arrival and animates on hover.
 - **What makes us different** – heading, toggle, card and button first, then the big logo draws itself, then the gradient blooms. The toggle switches between the "with" and "without New View" lists.
 - **Testimonials** – a staggered fade-up; a swipeable slider with working dots on small screens.
-- **CTA** – quick (~1.4s): the frame outline draws, handles snap on, the orange fills in, then copy, button and the pixel idea → wireframe → design illustration (interactive: your cursor in the picture follows you, the bulb glows as you approach).
+- **CTA** – quick (~1.4s): the frame outline draws, handles snap on, the orange fills in, then copy, button and a minimal pixel idea → wireframe → design illustration at the Figma image size. The dotted arrows pulse towards their heads, the bulb glows as you approach and the white cursor follows yours.
+- **Navigation** – Home, About, Services, Work and Contact, with the current section highlighted; a full-screen menu on phones.
 - **Every CTA button** – hover grows square pixels outward from where the cursor entered until the button is solid black (`lib/pixelHover.ts`).
 
 Everything respects `prefers-reduced-motion`.

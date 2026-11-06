@@ -43,7 +43,11 @@ function Cross() {
 export default function Different() {
   const root = useRef<HTMLElement>(null);
   const list = useRef<HTMLUListElement>(null);
+  // `on` drives the switch (instant); `withUs` drives the list, which swaps
+  // after a short cross-fade.
+  const [on, setOn] = useState(true);
   const [withUs, setWithUs] = useState(true);
+  const onRef = useRef(true);
   const items = withUs ? WITH : WITHOUT;
 
   // Entrance: content first, then the big logo draws in, then the gradient blooms.
@@ -90,7 +94,9 @@ export default function Different() {
   // Toggle: cross-fade the list between "without" and "with".
   const { contextSafe } = useGSAP({ scope: root });
   const toggle = contextSafe(() => {
-    const next = !withUs;
+    const next = !onRef.current;
+    onRef.current = next;
+    setOn(next);
     const rows = list.current?.querySelectorAll(`.${styles.item}`);
     if (!rows || prefersReducedMotion()) {
       setWithUs(next);
@@ -98,17 +104,18 @@ export default function Different() {
     }
     gsap.to(rows, {
       autoAlpha: 0,
-      y: -10,
-      duration: 0.25,
-      stagger: 0.03,
+      y: -8,
+      duration: 0.2,
+      stagger: 0.02,
       ease: "power2.in",
+      overwrite: true,
       onComplete: () => {
-        setWithUs(next);
+        setWithUs(onRef.current);
         requestAnimationFrame(() => {
           gsap.fromTo(
             list.current!.querySelectorAll(`.${styles.item}`),
-            { autoAlpha: 0, y: 12 },
-            { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.05, ease: EASE.out },
+            { autoAlpha: 0, y: 10 },
+            { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.04, ease: EASE.out, overwrite: true },
           );
         });
       },
@@ -116,7 +123,7 @@ export default function Different() {
   });
 
   return (
-    <section ref={root} id="why-us" className={styles.section} data-mode={withUs ? "with" : "without"} aria-labelledby="diff-title">
+    <section ref={root} id="why-us" className={styles.section} data-mode={on ? "with" : "without"} aria-labelledby="diff-title">
       <div className={styles.bg} aria-hidden="true">
         <div className={`${styles.gradient} js-reveal`} />
         <svg className={`${styles.bigLogo} js-reveal`} viewBox={LOGO_VIEWBOX} preserveAspectRatio="xMinYMin meet">
@@ -132,20 +139,20 @@ export default function Different() {
         </h2>
 
         <div className={`${styles.toggleRow} js-reveal`}>
-          <span className={styles.label} data-active={!withUs}>
+          <span className={styles.label} data-active={!on}>
             Without New View
           </span>
           <button
             type="button"
             role="switch"
-            aria-checked={withUs}
+            aria-checked={on}
             aria-label="Compare working with and without New View"
             className={styles.toggle}
             onClick={toggle}
           >
             <span className={styles.knob} />
           </button>
-          <span className={styles.label} data-active={withUs}>
+          <span className={styles.label} data-active={on}>
             With New View
           </span>
         </div>

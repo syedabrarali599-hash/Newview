@@ -35,10 +35,11 @@ type Props = {
   ref?: Ref<PixelCanvasHandle>;
 };
 
-const SETTLE_SECONDS = 1.6; // after the last pixel lands, layers snap to the lattice
+const SETTLE_SECONDS = 1.1; // after the last pixel lands, layers snap to the lattice
 
-const STIFFNESS = 140;
-const DAMPING = 15;
+// Critically damped: pixels glide into place without bouncing.
+const STIFFNESS = 110;
+const DAMPING = 21;
 
 type Particle = {
   layer: number;
@@ -163,20 +164,23 @@ function layerFx(art: string, layer: string, e: Env): Fx {
       return {};
     }
     case "idea": {
-      const bob = (ph: number) => Math.sin(e.t * 1.7 + ph) * 0.3;
-      const glow = e.active ? clamp(1.25 - Math.hypot(e.px - 7.5, e.py - 7) / 12, 0.3, 1) : 0.55;
-      if (layer === "rays") return { alpha: glow * (0.55 + 0.45 * pulse(e.t * 5)) };
-      if (layer === "bulb") return { dy: bob(0), recolor: glow > 0.8 ? { y: "#ffe45c" } : undefined };
+      const glow = e.active ? clamp(1.3 - Math.hypot(e.px - 18.5, e.py - 14.5) / 22, 0.35, 1) : 0.6;
+      if (layer === "rays") return { alpha: glow * (0.6 + 0.4 * pulse(e.t * 4)) };
+      if (layer === "bulb") return { recolor: glow > 0.85 ? { y: "#ffe45c" } : undefined };
       if (layer === "arrow1" || layer === "arrow2")
-        return { alphaAt: (hx) => 0.25 + 0.75 * (Math.floor(hx - e.t * 6) % 3 === 0 ? 1 : 0.35) };
-      if (layer === "win1") return { dy: bob(1.2), dx: lx * 0.4 };
-      if (layer === "win2") return { dy: bob(2.4), dx: lx * 0.6 };
-      if (layer === "click") return { dy: bob(2.4) + (Math.sin(e.t * 4) > 0.7 ? 0.35 : 0), dx: lx * 0.6 };
+        // A wave runs along the dots into the head, which nudges forward.
+        return {
+          dx: Math.max(0, Math.sin(e.t * 3)) * 0.6,
+          alphaAt: (hx) => 0.45 + 0.55 * pulse(e.t * 6 - hx * 1.3),
+        };
+      if (layer === "win2") return { dy: -e.near * 0.5 };
+      if (layer === "click") return { dy: -e.near * 0.5 + (Math.sin(e.t * 3.5) > 0.75 ? 0.4 : 0) };
       if (layer === "cursor") {
-        if (!e.active) return { dx: Math.sin(e.t * 0.8) * 1.2, dy: Math.sin(e.t * 1.3) * 0.8 };
-        return { dx: clamp(e.px - 7, -7, 33) * e.near, dy: clamp(e.py - 16, -15, 4) * e.near };
+        // Your cursor in the picture follows the real one.
+        if (!e.active) return {};
+        return { dx: clamp(e.px - 13, -6, 62) * e.near, dy: clamp(e.py - 22, -18, 12) * e.near };
       }
-      if (layer === "spark") return { alpha: 0.35 + 0.65 * pulse(e.t * 3) };
+      if (layer === "spark") return { alpha: 0.4 + 0.6 * pulse(e.t * 3) };
       return {};
     }
   }
@@ -194,12 +198,14 @@ function build(def: PixelArtDef, scattered: boolean, reduced: boolean): Particle
         if (ch === ".") continue;
         const p: Particle = { layer: li, ch, hx: c, hy: r, x: c, y: r, vx: 0, vy: 0, alpha: 1, delay: 0 };
         if (scattered && !reduced) {
+          // A gentle gather: each pixel drifts in from a short way off and
+          // fades up, settling from the centre outwards.
           const ang = Math.random() * Math.PI * 2;
-          const dist = def.cols * (0.3 + Math.random() * 0.45);
+          const dist = 1.5 + Math.random() * 3.5;
           p.x = c + Math.cos(ang) * dist;
-          p.y = r + Math.sin(ang) * dist;
+          p.y = r + Math.sin(ang) * dist + 1.5;
           p.alpha = 0;
-          p.delay = Math.random() * 0.35 + Math.hypot(c - cx, r - cy) * 0.022;
+          p.delay = Math.random() * 0.18 + (Math.hypot(c - cx, r - cy) / Math.hypot(cx, cy)) * 0.35;
         }
         out.push(p);
       }

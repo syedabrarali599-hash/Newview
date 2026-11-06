@@ -6,16 +6,12 @@ import { scrollToTarget, useExperience } from "@/lib/experience";
 import { LogoMark } from "./Logo";
 import styles from "./Nav.module.css";
 
-/** One link per section, in page order. */
+/** The essentials only; every other section is a scroll away. */
 export const NAV_LINKS = [
   { label: "Home", href: "#top" },
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Work", href: "#work" },
-  { label: "Process", href: "#process" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Why us", href: "#why-us" },
-  { label: "Testimonials", href: "#testimonials" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -71,7 +67,7 @@ export default function Nav() {
           trigger: section,
           start: "top 45%",
           end: "bottom 45%",
-          onToggle: (self) => self.isActive && setActive(href),
+          onToggle: (self) => setActive((prev) => (self.isActive ? href : prev === href ? "" : prev)),
         });
       });
     },

@@ -49,7 +49,7 @@ export default function Cta() {
   );
 
   return (
-    <section ref={root} className={styles.section} aria-labelledby="cta-title">
+    <section ref={root} id="contact" className={styles.section} aria-labelledby="cta-title">
       <div ref={frame} className={styles.frame} data-cta>
         <span className={`${styles.edge} ${styles.edgeTop}`} aria-hidden="true" />
         <span className={`${styles.edge} ${styles.edgeRight}`} aria-hidden="true" />

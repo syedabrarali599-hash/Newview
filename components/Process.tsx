@@ -96,7 +96,7 @@ export default function Process() {
   );
 
   return (
-    <section ref={root} className={styles.process} aria-label="Our process">
+    <section ref={root} id="process" className={styles.process} aria-label="Our process">
       <div className={styles.intro}>
         <div className={styles.panel}>
           <h2 className={`${styles.statement} js-reveal`}>

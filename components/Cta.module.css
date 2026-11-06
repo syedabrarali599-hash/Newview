@@ -113,13 +113,18 @@
   font-size: 18px;
 }
 
+/* The Figma image box (657 × 328); the drawing sits inside it with the same
+   breathing room as the original illustration. */
 .art {
   position: relative;
   z-index: 1;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 657 / 328;
 }
 
 .illo {
-  width: 100%;
+  width: 82%;
   aspect-ratio: 42 / 21;
   height: auto;
 }

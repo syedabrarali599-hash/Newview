@@ -79,7 +79,7 @@ export default function GettingStarted() {
   );
 
   return (
-    <section ref={root} className={styles.section} aria-labelledby="start-title">
+    <section ref={root} id="how-it-works" className={styles.section} aria-labelledby="start-title">
       <header className={styles.header}>
         <Heading className="section-heading">
           <span id="start-title">Getting started is the easy part.</span>

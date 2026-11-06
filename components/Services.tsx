@@ -167,7 +167,7 @@ export default function Services() {
   );
 
   return (
-    <section ref={root} className={styles.services} aria-labelledby="services-title">
+    <section ref={root} id="services" className={styles.services} aria-labelledby="services-title">
       <header className={styles.header}>
         <Heading className="section-heading" start="top 85%">
           <span id="services-title">Built for real product needs</span>

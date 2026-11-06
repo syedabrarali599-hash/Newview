@@ -154,93 +154,96 @@ CURSOR = [
 
 arts = {}
 
+# The four service illustrations keep the footprint of the original Figma art:
+# roughly 22 of the 32 grid cells, centred, with a 4–5 cell margin.
+
 # ---------- 1. Brand identity: pen nib ----------
 a = Art(32, 32)
 L = a.layer("nib")
-L.poly([(11, 6), (22, 6), (25.5, 12), (25.5, 15), (17.5, 28.5), (15.5, 28.5), (7.5, 15), (7.5, 12)], "o")
-for y in range(8, 25):
-    for x in range(17, 26):
+L.poly([(12.5, 10), (20.5, 10), (23, 14), (23, 16), (17.5, 25.5), (15.5, 25.5), (10, 16), (10, 14)], "o")
+for y in range(10, 25):
+    for x in range(17, 24):
         if L.get(x, y) == "o" and L.get(x + 1, y) == ".":
             L.set(x, y, "O")
-for (x, y) in [(10, 11), (10, 12), (10, 13), (11, 10), (11, 14), (12, 15), (13, 17)]:
+for (x, y) in [(11, 14), (11, 15), (12, 13), (12, 16), (13, 18)]:
     if L.get(x, y) == "o":
         L.set(x, y, "l")
 L.outline("k")
-L.rect(15, 12, 17, 14, "k"); L.set(16, 13, "w")
-L.line(16, 15, 16, 28, "k")
+L.rect(15, 14, 17, 16, "k"); L.set(16, 15, "w")
+L.line(16, 17, 16, 25, "k")
 C = a.layer("collar")
-C.rect(11, 2, 21, 4, "g"); C.rect(19, 2, 21, 4, "G"); C.rect(12, 3, 13, 3, "w")
+C.rect(12, 6, 20, 8, "g"); C.rect(18, 6, 20, 8, "G"); C.rect(13, 7, 14, 7, "w")
 C.outline("k")
 S = a.layer("spark")
-S.sprite(25, 2, SPARK)
+S.sprite(22, 4, SPARK_S)
 S2 = a.layer("spark2")
-S2.sprite(4, 22, SPARK_S)
+S2.sprite(7, 22, SPARK_S)
 arts["nib"] = a
 
 # ---------- 2. Web & app UI: browser window + cursor ----------
 a = Art(32, 32)
 W = a.layer("window")
-W.rect(4, 6, 27, 25, "w")
-W.frame(3, 5, 28, 26, "k")
-W.rect(4, 6, 27, 8, "o"); W.rect(4, 9, 27, 9, "k")
-W.set(6, 7, "w"); W.set(8, 7, "y"); W.set(10, 7, "t")
-W.rect(6, 12, 15, 20, "b")
-W.poly([(6, 21), (6, 18), (9, 15), (12, 18), (13.5, 16.5), (16, 19), (16, 21)], "t")
-W.rect(13, 13, 14, 14, "y")
-W.frame(5, 11, 16, 21, "k")
-for (x0, ln) in [(12, 8), (14, 6), (16, 7)]:
-    W.rect(18, x0, 18 + ln - 1, x0, "g")
+W.rect(7, 9, 24, 23, "w")
+W.frame(6, 8, 25, 24, "k")
+W.rect(7, 9, 24, 10, "o"); W.rect(7, 11, 24, 11, "k")
+W.set(8, 9, "w"); W.set(10, 9, "y"); W.set(12, 9, "t")
+W.rect(9, 14, 14, 19, "b")
+W.poly([(9, 20), (9, 18), (11, 16), (13, 18), (14, 17), (15, 18), (15, 20)], "t")
+W.rect(13, 15, 13, 15, "y")
+W.frame(8, 13, 15, 20, "k")
+for (y0, ln) in [(14, 6), (16, 4), (18, 5)]:
+    W.rect(17, y0, 17 + ln - 1, y0, "g")
 Bt = a.layer("button")
-Bt.rect(18, 19, 25, 21, "o")
-Bt.frame(17, 18, 26, 22, "k")
+Bt.rect(18, 20, 22, 21, "o")
+Bt.frame(17, 19, 23, 22, "k")
 Cu = a.layer("cursor")
-Cu.sprite(21, 20, CURSOR)
+Cu.sprite(20, 20, CURSOR[:8])
 S = a.layer("spark")
-S.sprite(26, 1, SPARK_S)
+S.sprite(24, 4, SPARK_S)
 arts["browser"] = a
 
 # ---------- 3. Design systems: component tiles ----------
 a = Art(32, 32)
-tiles = [(5, 5), (19, 5), (5, 19), (19, 19)]
+SHAPES = [
+    ["ooooO", "ooooO", "ooooO", "ooooO", "OOOOO"],
+    [".yyy.", "ywyyy", "yyyyy", "yyyyY", ".yYY."],
+    ["..t..", ".ttt.", ".ttt.", "ttttt", "TTTTT"],
+    ["..p..", "..p..", "ppppp", "..p..", "..p.."],
+]
+tiles = [(7, 7), (18, 7), (7, 18), (18, 18)]
 for i, (x0, y0) in enumerate(tiles):
     T = a.layer(f"tile{i}")
-    T.rect(x0, y0, x0 + 9, y0 + 9, "k")  # offset shadow
+    T.rect(x0, y0, x0 + 8, y0 + 8, "k")  # offset shadow
     T.rect(x0 - 1, y0 - 1, x0 + 7, y0 + 7, "k")
     T.rect(x0, y0, x0 + 6, y0 + 6, "w")
-    cx, cy = x0 + 3.5, y0 + 3.5
-    if i == 0:
-        T.rect(x0 + 1, y0 + 1, x0 + 5, y0 + 5, "o"); T.rect(x0 + 4, y0 + 2, x0 + 5, y0 + 5, "O")
-    elif i == 1:
-        T.ellipse(cx, cy, 2.7, 2.7, "y"); T.set(x0 + 2, y0 + 2, "w")
-    elif i == 2:
-        T.poly([(cx, y0 + 0.6), (x0 + 6.4, y0 + 5.6), (x0 + 0.6, y0 + 5.6)], "t")
-    else:
-        T.rect(x0 + 3, y0 + 1, x0 + 3, y0 + 5, "p"); T.rect(x0 + 1, y0 + 3, x0 + 5, y0 + 3, "p")
-        T.rect(x0 + 2, y0 + 2, x0 + 4, y0 + 4, "p"); T.set(x0 + 2, y0 + 2, "w"); T.set(x0 + 4, y0 + 2, "w")
-        T.set(x0 + 2, y0 + 4, "w"); T.set(x0 + 4, y0 + 4, "w")
+    T.sprite(x0 + 1, y0 + 1, SHAPES[i])
 arts["blocks"] = a
 
 # ---------- 4. Marketing: megaphone + sound waves ----------
 a = Art(32, 32)
 H = a.layer("horn")
-H.poly([(5, 13), (9, 13), (18, 7), (19, 7), (19, 25), (18, 25), (9, 19), (5, 19)], "o")
-for x in range(9, 19):
-    for y in range(7, 26):
+H.poly([(8, 13), (11, 13), (18, 9), (19, 9), (19, 23), (18, 23), (11, 19), (8, 19)], "o")
+for x in range(11, 18):
+    for y in range(9, 24):
         if H.get(x, y) == "o" and H.get(x, y - 1) == ".":
             H.set(x, y, "l")
             break
-for x in range(9, 19):
-    for y in range(25, 6, -1):
+for x in range(11, 18):
+    for y in range(23, 8, -1):
         if H.get(x, y) == "o":
             H.set(x, y, "O")
             break
-H.rect(2, 12, 4, 20, "y"); H.rect(2, 18, 4, 20, "Y")
-H.rect(18, 7, 20, 25, "w"); H.rect(20, 7, 20, 25, "g")
-H.rect(9, 20, 11, 24, "O")
+H.rect(6, 13, 7, 19, "y"); H.rect(6, 17, 7, 19, "Y")
+H.rect(18, 9, 19, 23, "w"); H.rect(19, 9, 19, 23, "g")
+H.rect(11, 20, 12, 22, "O")
 H.outline("k")
-for i, r in enumerate([4.5, 7.0, 9.5]):
+# Sound waves as clean pixel brackets: ")"  "))"  ")))"
+for i in range(3):
     Wv = a.layer(f"wave{i}")
-    arc(Wv, 20.5, 16, r, -46, 46, "k", 1.25)
+    x = 22 + i * 2
+    h = 2 + i
+    Wv.rect(x, 16 - h, x, 16 + h, "k")
+    Wv.set(x - 1, 16 - h - 1, "k"); Wv.set(x - 1, 16 + h + 1, "k")
 arts["megaphone"] = a
 
 # ---------- Getting started 1: chat bubbles ----------

@@ -89,7 +89,7 @@ export default function Testimonials() {
   };
 
   return (
-    <section ref={root} className={styles.section} aria-labelledby="testimonials-title">
+    <section ref={root} id="testimonials" className={styles.section} aria-labelledby="testimonials-title">
       <Heading className={`section-heading ${styles.heading}`}>
         <span id="testimonials-title">
           The work matters.

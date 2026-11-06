@@ -32,11 +32,6 @@
 .mark {
   width: clamp(32px, 3.05vw, 44px);
   height: auto;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.brand:hover .mark {
-  transform: rotate(-90deg);
 }
 
 .word {

@@ -62,6 +62,8 @@ type ArtState = {
   settleAfter: number;
   /** smoothed per-layer offsets */
   offsets: { dx: number; dy: number }[];
+  /** offsets/alpha still easing towards their targets */
+  moving: boolean;
   layer: HTMLCanvasElement;
   lctx: CanvasRenderingContext2D;
 };
@@ -214,7 +216,11 @@ function build(def: PixelArtDef, scattered: boolean, reduced: boolean): Particle
   return out;
 }
 
+/** Arts with ambient (always-on) animation; the others only move when hovered. */
+const ALWAYS_ANIMATED = new Set(["chat", "plan", "rocket", "idea"]);
+
 export default function PixelCanvas({ arts, host, label, className, grid, scene, scattered, ref }: Props) {
+  const box = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const states = useRef<ArtState[]>([]);
   const clock = useRef(0);
@@ -229,9 +235,10 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
   }));
 
   useEffect(() => {
+    const wrap = box.current!;
     const cv = canvas.current!;
     const ctx = cv.getContext("2d")!;
-    const hostEl = host.current ?? cv.parentElement!;
+    const hostEl = host.current ?? wrap;
     const reduced = prefersReducedMotion();
     const cols = arts[0].cols;
     const rows = arts[0].rows;
@@ -247,38 +254,47 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
         assembleAt: -10,
         settleAfter: Math.max(0, ...particles.map((p) => p.delay)) + SETTLE_SECONDS,
         offsets: def.layers.map(() => ({ dx: 0, dy: 0 })),
+        moving: false,
         layer,
         lctx: layer.getContext("2d")!,
       };
     });
 
-    // Arts are composited here first, so the glitch band never erases the grid.
+    // Arts are composited here during a transition, so the glitch band never
+    // touches the grid underneath.
     const comp = document.createElement("canvas");
     const cctx = comp.getContext("2d")!;
-    let dpr = 1;
+    // Pixel art is drawn at 1 canvas pixel per CSS pixel with whole-number
+    // cells, and scaled up crisply by CSS (image-rendering: pixelated):
+    // identical on screen, but a quarter of the work on retina displays.
     let w = 0;
     let h = 0;
     let cell = 0;
     let visible = false;
+    let lastKey = "";
+    let force = true;
     const env: Env = { t: 0, px: -99, py: -99, active: false, near: 0, cols, rows };
     // Glitch band state (re-rolled while the line moves).
     let lastLine = -1;
     let strips: { src: number; off: number }[] = [];
 
     const resize = () => {
-      const r = cv.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = r.width;
-      h = r.height;
-      cell = w / cols;
-      cv.width = Math.round(w * dpr);
-      cv.height = Math.round(h * dpr);
-      comp.width = cv.width;
-      comp.height = cv.height;
+      const r = wrap.getBoundingClientRect();
+      cell = Math.max(1, Math.floor(Math.min(r.width / cols, r.height ? r.height / rows : Infinity)));
+      w = cell * cols;
+      h = cell * rows;
+      cv.style.width = `${w}px`;
+      cv.style.height = `${h}px`;
+      cv.width = w;
+      cv.height = h;
+      comp.width = w;
+      comp.height = h;
       for (const st of states.current) {
-        st.layer.width = cv.width;
-        st.layer.height = cv.height;
+        st.layer.width = w;
+        st.layer.height = h;
       }
+      if (grid) cv.style.backgroundSize = `${cell}px ${cell}px`;
+      force = true;
     };
 
     const onMove = (e: PointerEvent) => {
@@ -291,21 +307,26 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
       env.active = false;
     };
 
-    const renderArt = (st: ArtState, dt: number) => {
-      const { lctx, def } = st;
-      lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      lctx.clearRect(0, 0, w, h);
+    const isSettled = (st: ArtState) => !st.assembled || reduced || clock.current - st.assembleAt > st.settleAfter;
+
+    const renderArt = (st: ArtState, target: CanvasRenderingContext2D, dt: number) => {
+      const { def } = st;
       if (!st.assembled) return;
       const since = clock.current - st.assembleAt;
       const settled = reduced || since > st.settleAfter;
       const k = 1 - Math.exp(-dt * 7);
+      let moving = false;
       const fx = def.layers.map((l, li) => {
         const f = layerFx(def.id, l.name, env);
         const o = st.offsets[li];
-        o.dx += ((f.dx ?? 0) - o.dx) * (reduced ? 1 : k);
-        o.dy += ((f.dy ?? 0) - o.dy) * (reduced ? 1 : k);
+        const tdx = f.dx ?? 0;
+        const tdy = f.dy ?? 0;
+        o.dx += (tdx - o.dx) * (reduced ? 1 : k);
+        o.dy += (tdy - o.dy) * (reduced ? 1 : k);
+        if (Math.abs(tdx - o.dx) > 0.002 || Math.abs(tdy - o.dy) > 0.002) moving = true;
         return f;
       });
+      st.moving = moving;
       for (const p of st.particles) {
         if (since < p.delay && !reduced) continue;
         const f = fx[p.layer];
@@ -323,22 +344,23 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
           p.x += p.vx * dt;
           p.y += p.vy * dt;
         }
-        const target = (f.alpha ?? 1) * (f.alphaAt ? f.alphaAt(p.hx, p.hy) : 1);
-        p.alpha += (target - p.alpha) * Math.min(1, dt * 9);
+        const goal = (f.alpha ?? 1) * (f.alphaAt ? f.alphaAt(p.hx, p.hy) : 1);
+        p.alpha += (goal - p.alpha) * Math.min(1, dt * 9);
+        if (Math.abs(goal - p.alpha) > 0.01) st.moving = true;
         if (p.alpha < 0.02) continue;
 
-        lctx.globalAlpha = p.alpha;
-        lctx.fillStyle = f.recolor?.[p.ch] ?? def.palette[p.ch];
+        target.globalAlpha = p.alpha;
+        target.fillStyle = f.recolor?.[p.ch] ?? def.palette[p.ch];
         // Snap to whole pixels so neighbouring cells tile without seams.
         const x0 = Math.round(p.x * cell);
         const y0 = Math.round(p.y * cell);
-        lctx.fillRect(x0, y0, Math.round((p.x + 1) * cell) - x0, Math.round((p.y + 1) * cell) - y0);
+        target.fillRect(x0, y0, Math.round((p.x + 1) * cell) - x0, Math.round((p.y + 1) * cell) - y0);
       }
-      lctx.globalAlpha = 1;
+      target.globalAlpha = 1;
     };
 
     const tick = (_: number, deltaMs: number) => {
-      if (!visible) return;
+      if (!visible || !w) return;
       const dt = Math.min(deltaMs, 40) / 1000;
       clock.current += dt;
       env.t = clock.current;
@@ -347,54 +369,51 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
       const sc: Scene = scene ? scene() : { a: 0 };
       const A = states.current[sc.a];
       const B = sc.b !== undefined ? states.current[sc.b] : undefined;
+      const line = sc.line;
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-
-      if (grid) {
-        ctx.fillStyle = "rgba(0,0,0,0.05)";
-        for (let i = 0; i <= cols; i++) {
-          const v = Math.min(Math.round(i * cell), Math.round(w) - 1);
-          ctx.fillRect(v, 0, 1, h);
-        }
-        for (let j = 0; j <= rows; j++) {
-          const v = Math.min(Math.round(j * cell), Math.round(h) - 1);
-          ctx.fillRect(0, v, w, 1);
-        }
-        if (env.active && env.px >= 0 && env.py >= 0 && env.px < cols && env.py < rows) {
-          ctx.fillStyle = "rgba(232,83,19,0.12)";
-          ctx.fillRect(Math.floor(env.px) * cell, Math.floor(env.py) * cell, cell, cell);
-        }
-      }
-
-      if (A) renderArt(A, dt);
-      if (B) renderArt(B, dt);
+      // Skip the frame entirely when nothing on this canvas can have changed.
+      const key = `${sc.a}|${sc.b ?? ""}|${line === undefined ? "" : Math.round(line)}`;
+      const busy =
+        force ||
+        key !== lastKey ||
+        env.active ||
+        env.near > 0.002 ||
+        (A && (!isSettled(A) || A.moving || ALWAYS_ANIMATED.has(A.def.id))) ||
+        (B && (!isSettled(B) || B.moving || ALWAYS_ANIMATED.has(B.def.id)));
+      if (!busy) return;
+      force = false;
+      lastKey = key;
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      const line = sc.line;
-      if (!B || line === undefined || line <= 0) {
-        // Whole of the incoming art once the line has passed the top.
-        const st = B && line !== undefined && line <= 0 ? B : A;
-        if (st) ctx.drawImage(st.layer, 0, 0);
-        return;
+      ctx.clearRect(0, 0, w, h);
+      if (grid && env.active && env.px >= 0 && env.py >= 0 && env.px < cols && env.py < rows) {
+        ctx.fillStyle = "rgba(232,83,19,0.12)";
+        ctx.fillRect(Math.floor(env.px) * cell, Math.floor(env.py) * cell, cell, cell);
       }
-      if (line >= h) {
-        if (A) ctx.drawImage(A.layer, 0, 0);
+
+      // No transition in progress: draw the current art straight onto the canvas.
+      if (!B || line === undefined || line <= 0 || line >= h) {
+        const st = B && line !== undefined && line <= 0 ? B : A;
+        if (st) renderArt(st, ctx, dt);
         return;
       }
 
-      // Art A above the line, art B below it…
-      const L = Math.round(line * dpr);
-      const W = cv.width;
-      const H = cv.height;
+      // Transition: art A above the line, art B below it…
+      for (const st of [A, B]) {
+        if (!st) continue;
+        st.lctx.setTransform(1, 0, 0, 1, 0, 0);
+        st.lctx.clearRect(0, 0, w, h);
+        renderArt(st, st.lctx, dt);
+      }
+      const L = Math.round(line);
       cctx.setTransform(1, 0, 0, 1, 0, 0);
-      cctx.clearRect(0, 0, W, H);
-      if (A && L > 0) cctx.drawImage(A.layer, 0, 0, W, L, 0, 0, W, L);
-      if (L < H) cctx.drawImage(B.layer, 0, L, W, H - L, 0, L, W, H - L);
+      cctx.clearRect(0, 0, w, h);
+      if (A && L > 0) cctx.drawImage(A.layer, 0, 0, w, L, 0, 0, w, L);
+      if (L < h) cctx.drawImage(B.layer, 0, L, w, h - L, 0, L, w, h - L);
 
       // …and a band of sliced, sideways-shifted scan lines where they meet.
-      const band = cell * 2.4 * dpr;
-      const stripH = Math.max(2, Math.round((cell / 3) * dpr));
+      const band = cell * 2.4;
+      const stripH = Math.max(2, Math.round(cell / 3));
       const count = Math.ceil((band * 2) / stripH);
       if (Math.abs(line - lastLine) > 0.5 || strips.length !== count) {
         lastLine = line;
@@ -404,29 +423,35 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
           const towardsB = (y - (L - band)) / (band * 2);
           return {
             src: Math.random() < towardsB ? 1 : 0,
-            off: Math.random() < 0.8 ? Math.round((Math.random() - 0.5) * 2 * cell * 3 * dpr * k) : 0,
+            off: Math.random() < 0.8 ? Math.round((Math.random() - 0.5) * 2 * cell * 3 * k) : 0,
           };
         });
       }
       strips.forEach((s, i) => {
         if (!s.off) return;
         const y = Math.round(L - band + i * stripH);
-        if (y + stripH <= 0 || y >= H) return;
+        if (y + stripH <= 0 || y >= h) return;
         const src = s.src ? B.layer : A?.layer;
         if (!src) return;
         const y0 = Math.max(0, y);
-        const hh = Math.min(H, y + stripH) - y0;
-        cctx.clearRect(0, y0, W, hh);
-        cctx.drawImage(src, 0, y0, W, hh, s.off, y0, W, hh);
+        const hh = Math.min(h, y + stripH) - y0;
+        cctx.clearRect(0, y0, w, hh);
+        cctx.drawImage(src, 0, y0, w, hh, s.off, y0, w, hh);
       });
       ctx.drawImage(comp, 0, 0);
     };
 
     resize();
     const ro = new ResizeObserver(resize);
-    ro.observe(cv);
-    const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting), { rootMargin: "120px" });
-    io.observe(cv);
+    ro.observe(wrap);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        force = true;
+      },
+      { rootMargin: "120px" },
+    );
+    io.observe(wrap);
     hostEl.addEventListener("pointermove", onMove);
     hostEl.addEventListener("pointerleave", onLeave);
     gsap.ticker.add(tick);
@@ -440,5 +465,23 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
     };
   }, [arts, host, grid, scene, scattered]);
 
-  return <canvas ref={canvas} className={className} role="img" aria-label={label} />;
+  return (
+    <div ref={box} className={className} style={{ display: "grid", placeItems: "center" }}>
+      <canvas
+        ref={canvas}
+        role="img"
+        aria-label={label}
+        style={{
+          imageRendering: "pixelated",
+          ...(grid
+            ? {
+                backgroundImage:
+                  "linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)",
+                boxShadow: "inset -1px -1px 0 rgba(0,0,0,0.05)",
+              }
+            : {}),
+        }}
+      />
+    </div>
+  );
 }

@@ -61,6 +61,14 @@ The work cards all shared the same truncated placeholder description, so each no
 
 All fonts and images are kept in `resources/` at the project root — add any new image or font there. Images are imported in `lib/assets.ts` (the bundler fingerprints and serves them); fonts are declared in `resources/fonts/fonts.css`.
 
+Images are shipped as compressed WebP; the full-size source files are kept in `resources/images/originals/` (not loaded by the site).
+
+## Performance notes
+
+- Pixel-art canvases draw at 1 canvas pixel per CSS pixel and are scaled up crisply with `image-rendering: pixelated`, and they skip frames when nothing changes.
+- The service-stack transition is computed from cached geometry plus `scrollY` (no layout reads per frame).
+- Large layers only animate `opacity`/`transform` (GPU-composited); no backdrop blur or filters on big areas.
+
 ## Things to swap in
 
 - **Fonts** – everything lives in `resources/fonts` (declared in `resources/fonts/fonts.css`). Season Mix Regular and Medium come from `season-font-family.zip` (also kept there) and were converted to WOFF2. That download is a *trial, personal-use-only* licence — buy the commercial licence before the site goes live.

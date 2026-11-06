@@ -55,7 +55,8 @@ export default function Nav() {
         end: "max",
         onUpdate(self) {
           const y = self.scroll();
-          el.dataset.scrolled = y > 40 ? "true" : "false";
+          const scrolled = y > 40 ? "true" : "false";
+          if (el.dataset.scrolled !== scrolled) el.dataset.scrolled = scrolled;
           if (y < 120) hide(0);
           else hide(self.direction === 1 ? -130 : 0);
         },

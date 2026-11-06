@@ -45,10 +45,9 @@ export default function Process() {
       // 1. The orange panel rises from the bottom while scaling up to fill the screen.
       gsap.fromTo(
         panel,
-        { scale: 0.55, borderRadius: 36 },
+        { scale: 0.55 },
         {
           scale: 1,
-          borderRadius: 0,
           ease: "none",
           scrollTrigger: { trigger: intro, start: "top bottom", end: "top top", scrub: 0.6 },
         },
@@ -63,8 +62,8 @@ export default function Process() {
         .fromTo(q(`.${styles.braceR}`), { xPercent: 260, autoAlpha: 0 }, { xPercent: 0, autoAlpha: 1, ease: EASE.soft, duration: 1 }, 0)
         .fromTo(
           split.words,
-          { autoAlpha: 0, x: 140, filter: "blur(10px)" },
-          { autoAlpha: 1, x: 0, filter: "blur(0px)", ease: EASE.soft, duration: 0.8, stagger: 0.09 },
+          { autoAlpha: 0, x: 140 },
+          { autoAlpha: 1, x: 0, ease: EASE.soft, duration: 0.8, stagger: 0.09 },
           0.1,
         )
         .to({}, { duration: 0.6 });
@@ -90,7 +89,7 @@ export default function Process() {
         .timeline({ scrollTrigger: { trigger: happen, start: "top 80%", once: true } })
         .fromTo(happen, { autoAlpha: 0, scale: 0.86, y: 40 }, { autoAlpha: 1, scale: 1, y: 0, duration: 1.3, ease: EASE.expo })
         .from(q(`.${styles.handle}`), { scale: 0, duration: 0.5, ease: "back.out(3)", stagger: 0.07, clearProps: "transform" }, "-=0.8")
-        .from(q(`.${styles.boxText}`), { yPercent: 60, autoAlpha: 0, filter: "blur(8px)", duration: 1, ease: EASE.out }, "-=0.7");
+        .from(q(`.${styles.boxText}`), { yPercent: 60, autoAlpha: 0, duration: 1, ease: EASE.out }, "-=0.7");
     },
     { scope: root },
   );

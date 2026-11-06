@@ -31,7 +31,7 @@ export default function Cta() {
       gsap.set(q(`.${styles.edgeLeft}, .${styles.edgeRight}`), { scaleY: 0 });
       gsap.set(q(`.${styles.handle}`), { scale: 0 });
       gsap.set(q(`.${styles.fill}`), { clipPath: "inset(50% 50% 50% 50%)" });
-      gsap.set(split.words, { autoAlpha: 0, yPercent: 38, filter: "blur(10px)" });
+      gsap.set(split.words, { autoAlpha: 0, yPercent: 38, filter: "blur(6px)" });
       gsap.set(q(`.${styles.button}`), { autoAlpha: 0, y: 18 });
 
       // Quick and snappy: outline → fill → copy, all within ~1.4s.
@@ -42,7 +42,19 @@ export default function Cta() {
         .to(q(`.${styles.handle}`), { scale: 1, duration: 0.3, ease: "back.out(3)", stagger: 0.04 }, 0.25)
         .to(q(`.${styles.fill}`), { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: EASE.inOut }, 0.3)
         .add(() => pixels.current?.assemble(), 0.5)
-        .to(split.words, { autoAlpha: 1, yPercent: 0, filter: "blur(0px)", duration: 0.7, stagger: 0.04, ease: EASE.out }, 0.55)
+        .to(
+          split.words,
+          {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.7,
+            stagger: 0.04,
+            ease: EASE.out,
+            onComplete: () => gsap.set(split.words, { clearProps: "filter" }),
+          },
+          0.55,
+        )
         .to(q(`.${styles.button}`), { autoAlpha: 1, y: 0, duration: 0.5, ease: EASE.out }, 0.8);
     },
     { scope: root },

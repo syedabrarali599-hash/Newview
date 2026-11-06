@@ -25,6 +25,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  image-rendering: pixelated;
 }
 
 .glasses {
@@ -55,7 +56,7 @@
   background: linear-gradient(
     105deg,
     transparent calc(var(--shine) * 1% - 14%),
-    rgba(255, 255, 255, 0.55) calc(var(--shine) * 1%),
+    rgba(255, 255, 255, 0.32) calc(var(--shine) * 1%),
     transparent calc(var(--shine) * 1% + 14%)
   );
   /* mask-image is set inline (relative URL) so it works under any base path */
@@ -65,7 +66,6 @@
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  mix-blend-mode: soft-light;
   pointer-events: none;
 }
 

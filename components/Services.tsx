@@ -117,17 +117,37 @@ export default function Services() {
    * The art stays put while the cards stack over each other. While a card is
    * sliding up, its top edge is the "line": the previous art shows above it,
    * the new art below it, with a glitch band in between.
+   *
+   * Runs every frame, so it works from geometry cached on resize/refresh plus
+   * the current scroll position — no layout reads per frame.
    */
+  const geo = useRef({ stackTop: 0, stackH: 0, panelH: 1, canvasOffset: 0, count: 4 });
+  const measure = useCallback(() => {
+    const st = stack.current;
+    const cv = artWrap.current?.querySelector("canvas");
+    if (!st || !cv || !stage.current) return;
+    const stackRect = st.getBoundingClientRect();
+    const stageRect = stage.current.getBoundingClientRect();
+    const cards = st.querySelectorAll<HTMLElement>("[data-card]");
+    geo.current = {
+      stackTop: stackRect.top + window.scrollY,
+      stackH: st.offsetHeight,
+      panelH: cards[0]?.offsetHeight || window.innerHeight,
+      canvasOffset: cv.getBoundingClientRect().top - stageRect.top,
+      count: cards.length,
+    };
+  }, []);
+
   const scene = useCallback((): Scene => {
-    const cards = stack.current?.querySelectorAll<HTMLElement>("[data-card]");
-    if (!cards || !stage.current || !artWrap.current) return { a: 0 };
-    const s = stage.current.getBoundingClientRect();
-    const artTop = artWrap.current.getBoundingClientRect().top;
+    const { stackTop, stackH, panelH, canvasOffset, count } = geo.current;
+    const y = window.scrollY;
+    const stageTop = Math.min(Math.max(stackTop - y, 0), stackTop + stackH - panelH - y);
+    const canvasTop = stageTop + canvasOffset;
     let current = 0;
-    for (let i = 1; i < cards.length; i++) {
-      const top = cards[i].getBoundingClientRect().top;
-      if (top <= s.top + 0.5) current = i;
-      else if (top < s.bottom) return { a: i - 1, b: i, line: top - artTop };
+    for (let i = 1; i < count; i++) {
+      const top = stackTop + i * panelH - y;
+      if (top <= stageTop + 0.5) current = i;
+      else if (top < stageTop + panelH) return { a: i - 1, b: i, line: top - canvasTop };
     }
     return { a: current };
   }, []);
@@ -135,11 +155,19 @@ export default function Services() {
   useGSAP(
     () => {
       const q = gsap.utils.selector(root);
+      measure();
+      ScrollTrigger.addEventListener("refresh", measure);
+      const ro = new ResizeObserver(measure);
+      if (artWrap.current) ro.observe(artWrap.current);
       revealLines(q(`.${styles.sub}`)[0] as HTMLElement, { trigger: q(`.${styles.header}`)[0] });
 
+      const cleanup = () => {
+        ScrollTrigger.removeEventListener("refresh", measure);
+        ro.disconnect();
+      };
       if (prefersReducedMotion()) {
         ARTS.forEach((_, i) => pixels.current?.assemble(i));
-        return;
+        return cleanup;
       }
 
       // Each illustration gathers pixel by pixel as its card arrives.
@@ -170,6 +198,8 @@ export default function Services() {
           scrollTrigger: { trigger: card, start: "top bottom", end: "top top", scrub: true },
         });
       });
+
+      return cleanup;
     },
     { scope: root },
   );

@@ -10,16 +10,14 @@
   padding: clamp(18px, 2.6vw, 37px) var(--gutter) 14px;
   transition:
     background-color 0.5s ease,
-    backdrop-filter 0.5s ease,
     padding 0.5s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.5s ease;
 }
 
 .nav[data-scrolled="true"] {
   padding-top: 14px;
-  background: rgba(252, 248, 240, 0.78);
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  /* Solid tint: a live backdrop blur re-renders on every scroll frame. */
+  background: rgba(252, 248, 240, 0.97);
   box-shadow: 0 1px 0 rgba(34, 13, 4, 0.06);
 }
 
@@ -180,8 +178,6 @@
 .nav[data-open="true"] {
   background: transparent;
   box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
 
 @media (max-width: 640px) {

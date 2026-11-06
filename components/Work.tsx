@@ -137,7 +137,9 @@ export default function Work() {
                     key={src}
                     src={src}
                     alt={i === p.images.length - 1 ? `${p.title} preview` : ""}
-                    loading="lazy"
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="low"
                     draggable={false}
                   />
                 ))}

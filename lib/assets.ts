@@ -1,8 +1,9 @@
 // Every image the site uses lives in /resources/images and is imported here,
 // so the bundler fingerprints and serves it. Use these URLs in components.
-import heroGlasses from "@/resources/images/hero-glasses.png";
-import cursorPurple from "@/resources/images/cursor-purple.png";
-import cursorYellow from "@/resources/images/cursor-yellow.png";
+// (Full-size source files are kept in /resources/images/originals.)
+import heroGlasses from "@/resources/images/hero-glasses.webp";
+import cursorPurple from "@/resources/images/cursor-purple.webp";
+import cursorYellow from "@/resources/images/cursor-yellow.webp";
 import logoMark from "@/resources/images/logo-mark.svg";
 import workAgentic from "@/resources/images/work/agentic.webp";
 import workOqualem from "@/resources/images/work/oqualem.webp";

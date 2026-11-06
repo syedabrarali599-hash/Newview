@@ -39,22 +39,24 @@ export default function HeroPlayground({ play }: { play: boolean }) {
     let cols = 0;
     let rows = 0;
     let size = 0;
-    let dpr = 1;
     let last: { x: number; y: number } | null = null;
     let visible = true;
     let idleTimer = 0;
     let pointerInside = false;
 
+    // Drawn at 1 canvas pixel per CSS pixel and scaled up crisply by CSS
+    // (image-rendering: pixelated) — square cells don't need retina pixels.
+    let drawn = new Set<number>();
     const resize = () => {
       const r = el.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
       size = (r.width / DESIGN_W) * CELL;
       cols = Math.ceil(r.width / size);
       rows = Math.ceil(r.height / size);
-      cv.width = Math.round(r.width * dpr);
-      cv.height = Math.round(r.height * dpr);
+      cv.width = Math.round(r.width);
+      cv.height = Math.round(r.height);
       cv.style.width = `${r.width}px`;
       cv.style.height = `${r.height}px`;
+      drawn = new Set();
     };
 
     const light = (cx: number, cy: number, life = 1) => {
@@ -118,8 +120,14 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         if (radius > Math.max(cols, rows)) ripples.splice(i, 1);
       }
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, cv.width, cv.height);
+      if (!cells.size && !drawn.size) return;
+      // Clear only the cells drawn last frame, then draw the live ones.
+      for (const key of drawn) {
+        const x = Math.floor((key % cols) * size) - 1;
+        const y = Math.floor(Math.floor(key / cols) * size) - 1;
+        ctx.clearRect(x, y, Math.ceil(size) + 2, Math.ceil(size) + 2);
+      }
+      const next = new Set<number>();
       ctx.fillStyle = TRAIL_COLOR;
       for (const [key, cell] of cells) {
         cell.life -= dt * 1.25;
@@ -127,12 +135,14 @@ export default function HeroPlayground({ play }: { play: boolean }) {
           cells.delete(key);
           continue;
         }
-        const x = (key % cols) * size;
-        const y = Math.floor(key / cols) * size;
+        const x = Math.round((key % cols) * size);
+        const y = Math.round(Math.floor(key / cols) * size);
         ctx.globalAlpha = Math.pow(cell.life, 1.6) * 0.85;
-        ctx.fillRect(x + 0.5, y + 0.5, size - 1, size - 1);
+        ctx.fillRect(x + 1, y + 1, Math.round(size) - 1, Math.round(size) - 1);
+        next.add(key);
       }
       ctx.globalAlpha = 1;
+      drawn = next;
     };
 
     resize();
@@ -257,6 +267,8 @@ export default function HeroPlayground({ play }: { play: boolean }) {
       const tick = (_: number, deltaMs: number) => {
         const dt = Math.min(deltaMs, 50) / 1000;
         for (const c of cursors) {
+          // Nothing to do once a cursor has arrived — no style writes at rest.
+          if (Math.abs(c.tx - c.x) < 0.05 && Math.abs(c.ty - c.y) < 0.05) continue;
           const k = 1 - Math.exp(-dt * c.speed);
           c.x += (c.tx - c.x) * k;
           c.y += (c.ty - c.y) * k;
@@ -299,8 +311,8 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         )
         .fromTo(
           q(`.${styles.glassesInner}`),
-          { autoAlpha: 0, scale: 0.86, y: 40, filter: "blur(14px)" },
-          { autoAlpha: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 1.4, ease: EASE.expo },
+          { autoAlpha: 0, scale: 0.86, y: 40 },
+          { autoAlpha: 1, scale: 1, y: 0, duration: 1.4, ease: EASE.expo },
           "-=1.05",
         )
         .fromTo(

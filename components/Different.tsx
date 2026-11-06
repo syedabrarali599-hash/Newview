@@ -61,32 +61,37 @@ export default function Different() {
       const heading = q(`.${styles.heading}`)[0] as HTMLElement;
       gsap.set(heading, { autoAlpha: 1 });
       const split = SplitText.create(heading, { type: "words" });
-      const paths = q(`.${styles.bigLogo} path`);
 
       // Content first, then the logo and gradient right behind it (done in ~2.4s).
       gsap
         .timeline({ scrollTrigger: { trigger: root.current, start: "top 72%", once: true } })
         .fromTo(
           split.words,
-          { autoAlpha: 0, yPercent: 38, filter: "blur(12px)" },
-          { autoAlpha: 1, yPercent: 0, filter: "blur(0px)", duration: 0.9, stagger: 0.06, ease: EASE.out },
+          { autoAlpha: 0, yPercent: 38, filter: "blur(6px)" },
+          {
+            autoAlpha: 1,
+            yPercent: 0,
+            filter: "blur(0px)",
+            duration: 0.9,
+            stagger: 0.06,
+            ease: EASE.out,
+            onComplete: () => gsap.set(split.words, { clearProps: "filter" }),
+          },
           0,
         )
         .fromTo(q(`.${styles.toggleRow}`), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.25)
         .fromTo(q(`.${styles.card}`), { autoAlpha: 0, y: 40, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.8 }, 0.4)
         .from(q(`.${styles.item}`), { autoAlpha: 0, x: -14, duration: 0.5, stagger: 0.05 }, 0.5)
         .fromTo(q(`.${styles.cta}`), { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.7)
-        // Logo behind
-        .set(q(`.${styles.bigLogo}`), { autoAlpha: 1 }, 1)
-        .fromTo(paths, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, ease: EASE.inOut, stagger: 0.08 }, 1)
-        .fromTo(paths, { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.6, ease: EASE.soft }, 1.3)
-        // Gradient behind the logo
+        // Logo behind, then the gradient behind it. Opacity/transform only, so
+        // the GPU composites them without repainting the big layers.
         .fromTo(
-          q(`.${styles.gradient}`),
-          { autoAlpha: 0, scale: 1.1 },
-          { autoAlpha: 1, scale: 1, duration: 1, ease: EASE.soft },
-          1.4,
-        );
+          q(`.${styles.bigLogo}`),
+          { autoAlpha: 0, y: 40 },
+          { autoAlpha: 1, y: 0, duration: 0.9, ease: EASE.out },
+          1,
+        )
+        .fromTo(q(`.${styles.gradient}`), { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, ease: EASE.soft }, 1.35);
     },
     { scope: root },
   );
@@ -125,10 +130,13 @@ export default function Different() {
   return (
     <section ref={root} id="why-us" className={styles.section} data-mode={on ? "with" : "without"} aria-labelledby="diff-title">
       <div className={styles.bg} aria-hidden="true">
-        <div className={`${styles.gradient} js-reveal`} />
+        <div className={`${styles.gradient} js-reveal`}>
+          <div className={styles.gradientColor} />
+          <div className={styles.gradientMuted} />
+        </div>
         <svg className={`${styles.bigLogo} js-reveal`} viewBox={LOGO_VIEWBOX} preserveAspectRatio="xMinYMin meet">
           {LOGO_PATHS.map((d) => (
-            <path key={d} d={d} pathLength={1} />
+            <path key={d} d={d} />
           ))}
         </svg>
       </div>

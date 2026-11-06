@@ -35,10 +35,10 @@ function dissolve(canvas: HTMLCanvasElement, onDone: () => void) {
   const ctx = canvas.getContext("2d")!;
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = Math.ceil(w * dpr);
-  canvas.height = Math.ceil(h * dpr);
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Square pixels don't need retina resolution: draw at CSS size and let CSS
+  // scale it up crisply (image-rendering: pixelated).
+  canvas.width = Math.ceil(w);
+  canvas.height = Math.ceil(h);
 
   const cell = Math.round(Math.min(48, Math.max(28, w / 40)));
   const cols = Math.ceil(w / cell);

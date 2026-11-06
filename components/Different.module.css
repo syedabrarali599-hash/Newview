@@ -12,20 +12,45 @@
   pointer-events: none;
 }
 
+/* Colour and grey versions are separate layers: the toggle cross-fades their
+   opacity (cheap for the GPU) rather than filtering a full-section layer. */
 .gradient {
   position: absolute;
   inset: -10% -5% -5%;
+  will-change: opacity;
+}
+
+.gradientColor,
+.gradientMuted {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.6s ease;
+  will-change: opacity;
+}
+
+.gradientColor {
   background:
     radial-gradient(60% 55% at 8% 100%, rgba(255, 214, 92, 0.95) 0%, rgba(255, 214, 92, 0) 70%),
     radial-gradient(50% 50% at 52% 108%, rgba(244, 116, 38, 0.9) 0%, rgba(244, 116, 38, 0) 72%),
     radial-gradient(55% 70% at 100% 72%, rgba(240, 150, 170, 0.85) 0%, rgba(240, 150, 170, 0) 70%),
     radial-gradient(80% 60% at 70% 0%, rgba(255, 228, 214, 0.7) 0%, rgba(255, 228, 214, 0) 70%);
-  transform-origin: 50% 100%;
-  transition: filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.section[data-mode="without"] .gradient {
-  filter: grayscale(1) brightness(1.05) opacity(0.55);
+.gradientMuted {
+  opacity: 0;
+  background:
+    radial-gradient(60% 55% at 8% 100%, rgba(225, 225, 225, 0.52) 0%, rgba(225, 225, 225, 0) 70%),
+    radial-gradient(50% 50% at 52% 108%, rgba(144, 144, 144, 0.5) 0%, rgba(144, 144, 144, 0) 72%),
+    radial-gradient(55% 70% at 100% 72%, rgba(179, 179, 179, 0.47) 0%, rgba(179, 179, 179, 0) 70%),
+    radial-gradient(80% 60% at 70% 0%, rgba(244, 244, 244, 0.39) 0%, rgba(244, 244, 244, 0) 70%);
+}
+
+.section[data-mode="without"] .gradientColor {
+  opacity: 0;
+}
+
+.section[data-mode="without"] .gradientMuted {
+  opacity: 1;
 }
 
 .bigLogo {
@@ -35,14 +60,13 @@
   width: 97.6%;
   height: auto;
   overflow: visible;
+  will-change: transform, opacity;
 }
 
 .bigLogo path {
   fill: rgba(255, 255, 255, 0.32);
   stroke: rgba(255, 255, 255, 0.95);
   stroke-width: 0.06;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
 }
 
 .content {

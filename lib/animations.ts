@@ -27,7 +27,7 @@ export function revealHeading(el: HTMLElement, opts: HeadingOptions = {}) {
 
   const tween = gsap.fromTo(
     split.words,
-    { autoAlpha: 0, yPercent: 38, filter: "blur(12px)" },
+    { autoAlpha: 0, yPercent: 38, filter: "blur(6px)" },
     {
       autoAlpha: 1,
       yPercent: 0,

@@ -30,19 +30,28 @@
   flex-direction: column;
   min-height: clamp(340px, 28vw, 406px);
   padding: 24px;
-  background-color: #fcf3e8;
+  background-color: var(--cream);
+  isolation: isolate;
+  transition: transform 0.7s var(--ease);
+}
+
+/* The pixel grid fades out towards the bottom of the card, as in Figma. */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background-image:
-    linear-gradient(to right, rgba(232, 83, 19, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(232, 83, 19, 0.07) 1px, transparent 1px);
+    linear-gradient(to right, rgba(232, 83, 19, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(232, 83, 19, 0.08) 1px, transparent 1px);
   background-size: 19px 19px;
-  transition:
-    transform 0.7s var(--ease),
-    box-shadow 0.7s var(--ease);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 35%, transparent 70%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 35%, transparent 70%);
+  pointer-events: none;
 }
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 24px 50px -28px rgba(34, 13, 4, 0.35);
 }
 
 .art {

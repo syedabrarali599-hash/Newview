@@ -1,4 +1,7 @@
+/* Colours from the Figma "Loading" frame: near-black brown counter and bar
+   on the brand orange; the track is the same ink at 20%. */
 .loader {
+  --loader-ink: #170903;
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -49,7 +52,7 @@
   font-size: clamp(96px, 12vw, 176px);
   line-height: 1.18;
   letter-spacing: -0.04em;
-  color: var(--cream);
+  color: var(--loader-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -63,14 +66,14 @@
   position: relative;
   width: min(361px, 70vw);
   height: 16px;
-  background: rgba(252, 248, 240, 0.25);
+  background: rgba(23, 9, 3, 0.2);
   overflow: hidden;
 }
 
 .fill {
   position: absolute;
   inset: 0;
-  background: var(--cream);
+  background: var(--loader-ink);
   transform: scaleX(0);
   transform-origin: left;
 }

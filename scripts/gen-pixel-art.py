@@ -326,16 +326,16 @@ Bulb.outline("k")
 Bulb.rect(16, 22, 20, 22, "k")
 Bulb.set(16, 12, "w"); Bulb.set(16, 13, "w"); Bulb.set(17, 11, "w")
 Cu = a.layer("cursor")
-Cu.sprite(7, 22, CURSOR[:6], flip=True)
+Cu.sprite(6, 21, CURSOR, flip=True)
 
 
 def arrow(layer, dots, head):
     # dotted shaft "▪ ▪" and a solid triangular head pointing right
     for x in dots:
-        layer.set(x, 17, "k")
+        layer.set(x, 17, "w")
     for dy, w in [(-2, 1), (-1, 2), (0, 3), (1, 2), (2, 1)]:
         for dx in range(w):
-            layer.set(head + dx, 17 + dy, "k")
+            layer.set(head + dx, 17 + dy, "w")
 
 
 Ar1 = a.layer("arrow1")
@@ -361,7 +361,7 @@ W2.rect(66, 14, 67, 15, "w")
 W2.rect(59, 22, 62, 22, "g")
 W2.rect(65, 21, 69, 22, "y")
 Cl = a.layer("click")
-Cl.sprite(69, 22, CURSOR[:8], mapping={"w": "y"})
+Cl.sprite(69, 22, CURSOR, mapping={"w": "y"})
 Sp = a.layer("spark")
 Sp.set(53, 7, "y"); Sp.set(76, 9, "y"); Sp.set(53, 27, "y"); Sp.set(75, 17, "w")
 arts["idea"] = a

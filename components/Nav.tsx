@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
 import { scrollToTarget, useExperience } from "@/lib/experience";
 import { LogoMark } from "./Logo";
+import SoundToggle from "./SoundToggle";
 import styles from "./Nav.module.css";
 
 /** The essentials only; every other section is a scroll away. */
@@ -31,7 +32,7 @@ export default function Nav() {
         { yPercent: -130, autoAlpha: 0 },
         { yPercent: 0, autoAlpha: 1, duration: 1.3, ease: EASE.expo, delay: 0.15 },
       );
-      gsap.from(`.${styles.links} .${styles.link}, .${styles.menuBtn}`, {
+      gsap.from(`.${styles.links} .${styles.link}, .${styles.menuBtn}, .${styles.sound}`, {
         y: -18,
         autoAlpha: 0,
         duration: 1,
@@ -124,6 +125,7 @@ export default function Nav() {
         <span className={styles.word}>New View</span>
       </a>
 
+      <div className={styles.right}>
       <nav aria-label="Primary" className={styles.desktop}>
         <ul className={styles.links}>
           {NAV_LINKS.map((l) => (
@@ -142,6 +144,8 @@ export default function Nav() {
         </ul>
       </nav>
 
+      <SoundToggle />
+
       <button
         type="button"
         className={styles.menuBtn}
@@ -152,6 +156,7 @@ export default function Nav() {
         <span>{open ? "Close" : "Menu"}</span>
         <span className={styles.burger} aria-hidden="true" />
       </button>
+      </div>
     </header>
 
       <div ref={menu} id="site-menu" className={styles.menu} style={{ display: "none" }}>

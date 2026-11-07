@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { ASSETS } from "@/lib/assets";
+import { sfx, unlockAudio } from "@/lib/sound";
 import styles from "./HeroPlayground.module.css";
 
 const DESIGN_W = 1336;
@@ -95,6 +96,8 @@ export default function HeroPlayground({ play }: { play: boolean }) {
     const onDown = (e: PointerEvent) => {
       const p = local(e);
       ripples.push({ x: p.x / size, y: p.y / size, t: 0 });
+      unlockAudio();
+      sfx.tap();
     };
 
     const tick = (_: number, deltaMs: number) => {
@@ -212,6 +215,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
         if (c) {
           c.speed = 22;
           c.el.dataset.captured = "true";
+          sfx.select();
         }
         // The captured cursor stops bobbing so its tip sits exactly on yours.
         floats.forEach((f, i) => {

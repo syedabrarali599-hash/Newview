@@ -41,6 +41,8 @@ which is how the hosted preview is published.
 - **Navigation** – Home, About, Services, Work and Contact, with the current section highlighted; a full-screen menu on phones.
 - **Every CTA button** – hover grows square pixels outward from where the cursor entered until the button is solid black (`lib/pixelHover.ts`).
 
+- **Sound effects** – retro 8-bit blips synthesised in the browser (`lib/sound.ts`, no audio files): a rising flutter when a button's pixels fill, a softer falling one when they clear, a two-note chime with sparkles when you tap the hero graphic, and a chirp when a pixel cursor becomes yours. Browsers only allow sound after the first click/tap; the pixel speaker in the navigation switches sound off (remembered per visitor).
+
 Everything respects `prefers-reduced-motion`.
 
 ## Copy changes

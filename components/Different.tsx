@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { CONTACT_HREF } from "@/lib/site";
+import { sfx } from "@/lib/sound";
 import { LOGO_PATHS, LOGO_VIEWBOX } from "./Logo";
 import styles from "./Different.module.css";
 
@@ -102,6 +103,8 @@ export default function Different() {
     const next = !onRef.current;
     onRef.current = next;
     setOn(next);
+    if (next) sfx.switchOn();
+    else sfx.switchOff();
     const rows = list.current?.querySelectorAll(`.${styles.item}`);
     if (!rows || prefersReducedMotion()) {
       setWithUs(next);

@@ -80,7 +80,7 @@ export default function Footer() {
         <ul className={styles.list}>
           {NAV.map((n) => (
             <li key={n.label}>
-              <a href={n.href} className={styles.link} onClick={(e) => go(e, n.href)}>
+              <a href={n.href} className={styles.link} data-sfx-hover="tick" data-sfx-click="click" onClick={(e) => go(e, n.href)}>
                 {n.label}
               </a>
             </li>
@@ -92,12 +92,12 @@ export default function Footer() {
         <p className={styles.colTitle}>Contact</p>
         <ul className={styles.list}>
           <li>
-            <a href={`tel:${CONTACT_PHONE.replace(/[^+\d]/g, "")}`} className={styles.link}>
+            <a href={`tel:${CONTACT_PHONE.replace(/[^+\d]/g, "")}`} className={styles.link} data-sfx-hover="tick">
               {CONTACT_PHONE}
             </a>
           </li>
           <li>
-            <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link}>
+            <a href={`mailto:${CONTACT_EMAIL}`} className={styles.link} data-sfx-hover="tick">
               {CONTACT_EMAIL}
             </a>
           </li>
@@ -105,7 +105,7 @@ export default function Footer() {
         <ul className={styles.socials}>
           {SOCIALS.map((s) => (
             <li key={s.label}>
-              <a href={s.href} className={styles.social} aria-label={s.label} target="_blank" rel="noreferrer">
+              <a href={s.href} className={styles.social} aria-label={s.label} target="_blank" rel="noreferrer" data-sfx-hover="tick" data-sfx-click="click">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
                   <path d={s.d} />
                 </svg>

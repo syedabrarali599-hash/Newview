@@ -5,7 +5,7 @@ import Lenis from "lenis";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import { ExperienceContext } from "@/lib/experience";
 import { initPixelHover } from "@/lib/pixelHover";
-import { unlockAudio } from "@/lib/sound";
+import { initSoundEvents, unlockAudio } from "@/lib/sound";
 import Loader from "./Loader";
 import Nav from "./Nav";
 import Hero from "./Hero";
@@ -29,8 +29,9 @@ export default function Experience() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Pixel-fill hover on every CTA.
+  // Pixel-fill hover on every CTA, and hover/click sounds across the page.
   useEffect(() => initPixelHover(), []);
+  useEffect(() => initSoundEvents(), []);
 
   // Browsers allow sound only after a click, tap or key press.
   useEffect(() => {

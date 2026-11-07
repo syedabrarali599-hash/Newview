@@ -85,6 +85,7 @@ export default function HeroPlayground({ play }: { play: boolean }) {
     const onMove = (e: PointerEvent) => {
       pointerInside = true;
       const p = local(e);
+      sfx.trail(p.y / (rows * size || 1));
       if (last) paintSegment(last.x, last.y, p.x, p.y);
       else light(Math.floor(p.x / size), Math.floor(p.y / size));
       last = p;

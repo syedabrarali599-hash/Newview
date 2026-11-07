@@ -5,6 +5,7 @@ import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
 import { scrollToTarget, useExperience } from "@/lib/experience";
 import { LogoMark } from "./Logo";
 import SoundToggle from "./SoundToggle";
+import { sfx } from "@/lib/sound";
 import styles from "./Nav.module.css";
 
 /** The essentials only; every other section is a scroll away. */
@@ -77,8 +78,11 @@ export default function Nav() {
   );
 
   // Full-screen menu on small screens.
+  const menuMounted = useRef(false);
   useEffect(() => {
     if (!menu.current) return;
+    if (menuMounted.current) sfx.menu(open);
+    menuMounted.current = true;
     const items = menu.current.querySelectorAll(`.${styles.menuLink}`);
     if (open) {
       lenis?.stop();
@@ -120,7 +124,7 @@ export default function Nav() {
   return (
     <>
     <header ref={ref} className={`${styles.nav} js-reveal`} data-scrolled="false" data-open={open}>
-      <a href="#top" className={styles.brand} onClick={(e) => go(e, "#top")} aria-label="New View — home">
+      <a href="#top" className={styles.brand} data-sfx-click="click" onClick={(e) => go(e, "#top")} aria-label="New View — home">
         <LogoMark className={styles.mark} />
         <span className={styles.word}>New View</span>
       </a>
@@ -132,6 +136,8 @@ export default function Nav() {
             <li key={l.href}>
               <a
                 href={l.href}
+                data-sfx-hover="tick"
+                data-sfx-click="click"
                 className={styles.link}
                 data-active={active === l.href}
                 aria-current={active === l.href ? "true" : undefined}
@@ -163,7 +169,13 @@ export default function Nav() {
         <ul>
           {NAV_LINKS.map((l, i) => (
             <li key={l.href} className={styles.menuItem}>
-              <a href={l.href} className={styles.menuLink} data-active={active === l.href} onClick={(e) => go(e, l.href)}>
+              <a
+                href={l.href}
+                className={styles.menuLink}
+                data-active={active === l.href}
+                data-sfx-click="click"
+                onClick={(e) => go(e, l.href)}
+              >
                 <span className={styles.menuNum}>[ {String(i + 1).padStart(2, "0")} ]</span>
                 {l.label}
               </a>

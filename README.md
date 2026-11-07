@@ -41,7 +41,7 @@ which is how the hosted preview is published.
 - **Navigation** – Home, About, Services, Work and Contact, with the current section highlighted; a full-screen menu on phones.
 - **Every CTA button** – hover grows square pixels outward from where the cursor entered until the button is solid black (`lib/pixelHover.ts`).
 
-- **Sound effects** – retro 8-bit blips synthesised in the browser (`lib/sound.ts`, no audio files): a rising flutter when a button's pixels fill, a softer falling one when they clear, a two-note chime with sparkles when you tap the hero graphic, and a chirp when a pixel cursor becomes yours. Browsers only allow sound after the first click/tap; the pixel speaker in the navigation switches sound off (remembered per visitor).
+- **Sound effects** – retro 8-bit blips synthesised in the browser (`lib/sound.ts`, no audio files), kept quiet and rate-limited: pixel flutters on every button, ticks/clicks on navigation and footer links and social icons, musical notes as you draw across the hero grid (pitch follows height), a chime when you tap it, a chirp when a pixel cursor becomes yours, per-illustration hovers (pen scribble, browser button click, tile pops, megaphone beeps, chat typing, checklist ticks, rocket whoosh), a sparkle as pixels gather, a glitch crackle as the service transition sweeps in, blips and hopping notes on the work cards, a chirp/bonk on the comparison switch, a ding when the CTA bulb lights, and menu sweeps on phones. Hover/click sounds on plain elements use `data-sfx-hover` / `data-sfx-click`. Browsers only allow sound after the first click/tap; the pixel speaker in the navigation switches it off (remembered per visitor).
 
 Everything respects `prefers-reduced-motion`.
 

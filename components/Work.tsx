@@ -126,7 +126,7 @@ export default function Work() {
 
       <div className={styles.grid}>
         {PROJECTS.map((p) => (
-          <a key={p.title} href={p.href} className={`${styles.card} js-reveal`} data-sfx-hover="card">
+          <a key={p.title} href={p.href} className={`${styles.card} js-reveal`}>
             <div className={styles.media}>
               <div
                 className={`${styles.shot} ${p.kind === "phone" ? styles.phone : styles.desktop} ${p.bordered ? styles.bordered : ""}`}
@@ -155,7 +155,7 @@ export default function Work() {
           </a>
         ))}
 
-        <a href={CONTACT_HREF} className={`${styles.card} ${styles.saved} js-reveal`} data-sfx-hover="hop">
+        <a href={CONTACT_HREF} className={`${styles.card} ${styles.saved} js-reveal`}>
           <span className={styles.savedGrid} aria-hidden="true" />
           {SQUARES.map((sq) => (
             <span

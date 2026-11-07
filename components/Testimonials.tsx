@@ -117,7 +117,6 @@ export default function Testimonials() {
             key={q.name}
             type="button"
             className={styles.dot}
-            data-sfx-click="click"
             data-active={(scrollable ? active : 0) === i}
             aria-label={`Show testimonial ${i + 1}`}
             onClick={() => goTo(i)}

@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
 import { scrollToTarget, useExperience } from "@/lib/experience";
 import { LogoMark } from "./Logo";
-import SoundToggle from "./SoundToggle";
-import { sfx } from "@/lib/sound";
 import styles from "./Nav.module.css";
 
 /** The essentials only; every other section is a scroll away. */
@@ -33,7 +31,7 @@ export default function Nav() {
         { yPercent: -130, autoAlpha: 0 },
         { yPercent: 0, autoAlpha: 1, duration: 1.3, ease: EASE.expo, delay: 0.15 },
       );
-      gsap.from(`.${styles.links} .${styles.link}, .${styles.menuBtn}, .${styles.sound}`, {
+      gsap.from(`.${styles.links} .${styles.link}, .${styles.menuBtn}`, {
         y: -18,
         autoAlpha: 0,
         duration: 1,
@@ -78,11 +76,8 @@ export default function Nav() {
   );
 
   // Full-screen menu on small screens.
-  const menuMounted = useRef(false);
   useEffect(() => {
     if (!menu.current) return;
-    if (menuMounted.current) sfx.menu(open);
-    menuMounted.current = true;
     const items = menu.current.querySelectorAll(`.${styles.menuLink}`);
     if (open) {
       lenis?.stop();
@@ -124,20 +119,17 @@ export default function Nav() {
   return (
     <>
     <header ref={ref} className={`${styles.nav} js-reveal`} data-scrolled="false" data-open={open}>
-      <a href="#top" className={styles.brand} data-sfx-click="click" onClick={(e) => go(e, "#top")} aria-label="New View — home">
+      <a href="#top" className={styles.brand} onClick={(e) => go(e, "#top")} aria-label="New View — home">
         <LogoMark className={styles.mark} />
         <span className={styles.word}>New View</span>
       </a>
 
-      <div className={styles.right}>
       <nav aria-label="Primary" className={styles.desktop}>
         <ul className={styles.links}>
           {NAV_LINKS.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
-                data-sfx-hover="tick"
-                data-sfx-click="click"
                 className={styles.link}
                 data-active={active === l.href}
                 aria-current={active === l.href ? "true" : undefined}
@@ -150,8 +142,6 @@ export default function Nav() {
         </ul>
       </nav>
 
-      <SoundToggle />
-
       <button
         type="button"
         className={styles.menuBtn}
@@ -162,20 +152,13 @@ export default function Nav() {
         <span>{open ? "Close" : "Menu"}</span>
         <span className={styles.burger} aria-hidden="true" />
       </button>
-      </div>
     </header>
 
       <div ref={menu} id="site-menu" className={styles.menu} style={{ display: "none" }}>
         <ul>
           {NAV_LINKS.map((l, i) => (
             <li key={l.href} className={styles.menuItem}>
-              <a
-                href={l.href}
-                className={styles.menuLink}
-                data-active={active === l.href}
-                data-sfx-click="click"
-                onClick={(e) => go(e, l.href)}
-              >
+              <a href={l.href} className={styles.menuLink} data-active={active === l.href} onClick={(e) => go(e, l.href)}>
                 <span className={styles.menuNum}>[ {String(i + 1).padStart(2, "0")} ]</span>
                 {l.label}
               </a>

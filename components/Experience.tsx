@@ -5,7 +5,6 @@ import Lenis from "lenis";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import { ExperienceContext } from "@/lib/experience";
 import { initPixelHover } from "@/lib/pixelHover";
-import { initSoundEvents, unlockAudio } from "@/lib/sound";
 import Loader from "./Loader";
 import Nav from "./Nav";
 import Hero from "./Hero";
@@ -29,21 +28,8 @@ export default function Experience() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Pixel-fill hover on every CTA, and hover/click sounds across the page.
+  // Pixel-fill hover on every CTA.
   useEffect(() => initPixelHover(), []);
-  useEffect(() => initSoundEvents(), []);
-
-  // Browsers allow sound only after a click, tap or key press.
-  useEffect(() => {
-    const unlock = () => unlockAudio();
-    const opts = { capture: true, passive: true } as const;
-    window.addEventListener("pointerdown", unlock, opts);
-    window.addEventListener("keydown", unlock, opts);
-    return () => {
-      window.removeEventListener("pointerdown", unlock, opts);
-      window.removeEventListener("keydown", unlock, opts);
-    };
-  }, []);
 
   // Lenis drives the scroll; GSAP's ticker drives Lenis so both stay in sync.
   useEffect(() => {

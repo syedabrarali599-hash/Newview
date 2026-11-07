@@ -1,7 +1,6 @@
 "use client";
 
 import { prefersReducedMotion } from "./gsap";
-import { sfx } from "./sound";
 
 /**
  * Pixel hover for CTAs. Hovering a `.btn` or `[data-pixel-hover]` element
@@ -129,7 +128,6 @@ export function initPixelHover(root: Document | HTMLElement = document) {
     st.oy = pt.y;
     st.target = 1;
     el.dataset.pixelActive = "true";
-    sfx.pixelsIn();
     if (reduced) {
       st.p = 1;
       draw(st);
@@ -144,7 +142,6 @@ export function initPixelHover(root: Document | HTMLElement = document) {
     st.oy = Math.min(st.h, Math.max(0, pt.y));
     st.target = 0;
     el.dataset.pixelActive = "false";
-    sfx.pixelsOut();
     if (reduced) {
       st.p = 0;
       draw(st);

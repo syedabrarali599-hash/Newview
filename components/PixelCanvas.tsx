@@ -2,7 +2,6 @@
 
 import { useEffect, useImperativeHandle, useRef, type Ref, type RefObject } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
-import { sfx } from "@/lib/sound";
 import type { PixelArtDef } from "./pixelArt.data";
 
 /**
@@ -65,8 +64,6 @@ type ArtState = {
   offsets: { dx: number; dy: number }[];
   /** offsets/alpha still easing towards their targets */
   moving: boolean;
-  /** a layer is showing its "pressed"/lit colour (browser button, bulb) */
-  lit: boolean;
   layer: HTMLCanvasElement;
   lctx: CanvasRenderingContext2D;
 };
@@ -234,7 +231,6 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
       if (!st || st.assembled) return;
       st.assembled = true;
       st.assembleAt = clock.current;
-      sfx.gather();
     },
   }));
 
@@ -259,7 +255,6 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
         settleAfter: Math.max(0, ...particles.map((p) => p.delay)) + SETTLE_SECONDS,
         offsets: def.layers.map(() => ({ dx: 0, dy: 0 })),
         moving: false,
-        lit: false,
         layer,
         lctx: layer.getContext("2d")!,
       };
@@ -302,24 +297,14 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
       force = true;
     };
 
-    // Each illustration has its own hover sound (pen scribble, tile pops, …),
-    // also played when the pointer enters the card that hosts it.
-    let currentArt = arts[0].id;
-    const onEnter = () => sfx.art(currentArt);
-    // Hover sound when the pointer reaches the illustration itself.
-    let overArt = false;
     const onMove = (e: PointerEvent) => {
       const r = cv.getBoundingClientRect();
       env.px = ((e.clientX - r.left) / r.width) * cols;
       env.py = ((e.clientY - r.top) / r.height) * rows;
       env.active = true;
-      const inside = env.px >= 0 && env.py >= 0 && env.px < cols && env.py < rows;
-      if (inside && !overArt) sfx.art(currentArt);
-      overArt = inside;
     };
     const onLeave = () => {
       env.active = false;
-      overArt = false;
     };
 
     const isSettled = (st: ArtState) => !st.assembled || reduced || clock.current - st.assembleAt > st.settleAfter;
@@ -342,13 +327,6 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
         return f;
       });
       st.moving = moving;
-      // Button pressed / bulb lit: play its sound once as it switches on.
-      const lit = fx.some((f) => f.recolor);
-      if (lit && !st.lit) {
-        if (def.id === "browser") sfx.click();
-        else sfx.ding();
-      }
-      st.lit = lit;
       for (const p of st.particles) {
         if (since < p.delay && !reduced) continue;
         const f = fx[p.layer];
@@ -395,9 +373,6 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
 
       // Skip the frame entirely when nothing on this canvas can have changed.
       const key = `${sc.a}|${sc.b ?? ""}|${line === undefined ? "" : Math.round(line)}`;
-      // The glitch line starts sweeping in a new illustration.
-      if (B && line !== undefined && line > 0 && line < h && !lastKey.includes(`|${sc.b}|`)) sfx.glitch();
-      currentArt = (B && line !== undefined && line <= h / 2 ? B : A)?.def.id ?? currentArt;
       const busy =
         force ||
         key !== lastKey ||
@@ -479,7 +454,6 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
     io.observe(wrap);
     hostEl.addEventListener("pointermove", onMove);
     hostEl.addEventListener("pointerleave", onLeave);
-    hostEl.addEventListener("pointerenter", onEnter);
     gsap.ticker.add(tick);
 
     return () => {
@@ -488,7 +462,6 @@ export default function PixelCanvas({ arts, host, label, className, grid, scene,
       io.disconnect();
       hostEl.removeEventListener("pointermove", onMove);
       hostEl.removeEventListener("pointerleave", onLeave);
-      hostEl.removeEventListener("pointerenter", onEnter);
     };
   }, [arts, host, grid, scene, scattered]);
 

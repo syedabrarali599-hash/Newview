@@ -4,28 +4,47 @@
  * Setup (about 5 minutes):
  *  1. Create a Google Sheet (e.g. "New View enquiries").
  *  2. In the sheet: Extensions → Apps Script. Delete the sample code and
- *     paste this whole file. Edit NOTIFY_EMAIL and SECRET below.
- *  3. Deploy → New deployment → type "Web app".
- *       Execute as: Me      Who has access: Anyone
- *     Click Deploy, allow the permissions, and copy the Web app URL.
- *  4. In Vercel → Project → Settings → Environment Variables add:
- *       CONTACT_WEBHOOK_URL    = the Web app URL from step 3
+ *     paste this whole file. Edit NOTIFY_EMAIL and SECRET below, then Save.
+ *  3. Choose "testSetup" in the function menu at the top and click Run.
+ *     Allow the permissions Google asks for. A test row appears in the
+ *     sheet (and a test email arrives, if NOTIFY_EMAIL is set).
+ *  4. Deploy → New deployment → type "Web app".
+ *       Execute as: Me      Who has access: Anyone   (not "Anyone with a Google account")
+ *     Click Deploy and copy the Web app URL (it ends in /exec).
+ *  5. In Vercel → Project → Settings → Environment Variables add:
+ *       CONTACT_WEBHOOK_URL    = the Web app URL from step 4
  *       CONTACT_WEBHOOK_SECRET = the same value as SECRET below
  *     then redeploy.
+ *  6. Open https://<your site>/api/contact in a browser: it checks the
+ *     connection and tells you what to fix, if anything.
  *
- * Every message adds a row to the "Enquiries" tab and emails NOTIFY_EMAIL.
- * The sheet can be downloaded as Excel any time (File → Download → .xlsx).
+ * After editing this script later, publish the change with
+ * Deploy → Manage deployments → ✎ Edit → Version: New version → Deploy
+ * (the web app keeps running the old version until you do).
+ *
+ * Every message adds a row to the "Enquiries" tab and, if NOTIFY_EMAIL is
+ * set, emails it. Leave NOTIFY_EMAIL as "" to only use the sheet. The sheet
+ * can be downloaded as Excel any time (File → Download → .xlsx).
  */
 
-const NOTIFY_EMAIL = "hello@newview.co"; // where notifications go
+const NOTIFY_EMAIL = "hello@newview.co"; // where notifications go ("" = sheet only, no emails)
 const SECRET = "change-me-to-a-long-random-string"; // must match CONTACT_WEBHOOK_SECRET
 const SHEET_NAME = "Enquiries";
 const HEADERS = ["Received", "Full name", "Email", "Phone", "Company", "Message", "Page"];
+const SCRIPT_VERSION = 2;
+
+/** Opening the web app URL in a browser shows this — proof it's deployed and public. */
+function doGet() {
+  return json_({ ok: true, script: "new-view-contact", version: SCRIPT_VERSION });
+}
 
 function doPost(e) {
   try {
     const data = JSON.parse((e && e.postData && e.postData.contents) || "{}");
     if (SECRET && data.secret !== SECRET) return json_({ ok: false, error: "unauthorised" });
+
+    // Connection check from the website (/api/contact): nothing is saved.
+    if (data.action === "ping") return json_({ ok: true, pong: true, version: SCRIPT_VERSION });
 
     const sheet = getSheet_();
     sheet.appendRow([
@@ -38,30 +57,55 @@ function doPost(e) {
       safe_(data.source),
     ]);
 
-    MailApp.sendEmail({
-      to: NOTIFY_EMAIL,
-      replyTo: String(data.email || ""),
-      subject: "New enquiry from " + String(data.name || "your website") + " — New View website",
-      body: [
-        "A new query has been registered on your website.",
-        "",
-        "Name: " + (data.name || ""),
-        "Email: " + (data.email || ""),
-        "Phone: " + (data.phone || "—"),
-        "Company: " + (data.company || "—"),
-        "",
-        "Message:",
-        String(data.message || ""),
-        "",
-        "All enquiries: " + SpreadsheetApp.getActiveSpreadsheet().getUrl(),
-      ].join("\n"),
-      htmlBody: emailHtml_(data),
-    });
+    // The row is saved first; a problem with email never loses the enquiry.
+    let emailed = false;
+    if (NOTIFY_EMAIL) {
+      try {
+        sendNotification_(data);
+        emailed = true;
+      } catch (mailErr) {
+        console.error("Email notification failed: " + mailErr);
+      }
+    }
 
-    return json_({ ok: true });
+    return json_({ ok: true, emailed: emailed });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   }
+}
+
+/**
+ * Run this once from the editor (pick "testSetup" at the top, click Run) to
+ * grant the permissions and check the sheet and email both work.
+ */
+function testSetup() {
+  getSheet_().appendRow([new Date(), "Setup test", "", "", "", "Test row from testSetup — you can delete it.", "testSetup"]);
+  if (NOTIFY_EMAIL) {
+    MailApp.sendEmail(NOTIFY_EMAIL, "New View contact form — test email", "Your contact form script can write to the sheet and send email.");
+  }
+  Logger.log("All good: a test row was added" + (NOTIFY_EMAIL ? " and a test email was sent to " + NOTIFY_EMAIL : "") + ".");
+}
+
+function sendNotification_(data) {
+  MailApp.sendEmail({
+    to: NOTIFY_EMAIL,
+    replyTo: String(data.email || ""),
+    subject: "New enquiry from " + String(data.name || "your website") + " — New View website",
+    body: [
+      "A new query has been registered on your website.",
+      "",
+      "Name: " + (data.name || ""),
+      "Email: " + (data.email || ""),
+      "Phone: " + (data.phone || "—"),
+      "Company: " + (data.company || "—"),
+      "",
+      "Message:",
+      String(data.message || ""),
+      "",
+      "All enquiries: " + SpreadsheetApp.getActiveSpreadsheet().getUrl(),
+    ].join("\n"),
+    htmlBody: emailHtml_(data),
+  });
 }
 
 function getSheet_() {

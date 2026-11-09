@@ -54,11 +54,15 @@ Every CTA and "Contact" link leads to `/contact`; the logo and "< Home" lead bac
 
 The form posts to `/api/contact` (`app/api/contact/route.ts`), which validates the message, filters spam (hidden honeypot field + a simple rate limit) and forwards it to a **Google Apps Script** that adds a row to a Google Sheet and emails you.
 
-One-time setup (about 5 minutes):
+One-time setup (about 5 minutes, free — no paid Vercel features needed):
 
-1. Create a Google Sheet, open **Extensions → Apps Script**, paste `integrations/google-apps-script/contact-form.gs`, and set `NOTIFY_EMAIL` and `SECRET` at the top.
-2. **Deploy → New deployment → Web app**, *Execute as: Me*, *Who has access: Anyone*. Copy the web app URL.
-3. In Vercel → Project → Settings → Environment Variables add `CONTACT_WEBHOOK_URL` (the URL) and `CONTACT_WEBHOOK_SECRET` (same value as `SECRET`), then redeploy. See `.env.example`.
+1. Create a Google Sheet, open **Extensions → Apps Script**, paste `integrations/google-apps-script/contact-form.gs`, and set `NOTIFY_EMAIL` and `SECRET` at the top. Leave `NOTIFY_EMAIL` as `""` if you only want the sheet.
+2. Pick **testSetup** in the function menu and click **Run**, allowing the permissions. A test row appears (and a test email, if `NOTIFY_EMAIL` is set).
+3. **Deploy → New deployment → Web app**, *Execute as: Me*, *Who has access: Anyone* (not "Anyone with a Google account"). Copy the web app URL (ends in `/exec`).
+4. In Vercel → Project → Settings → Environment Variables add `CONTACT_WEBHOOK_URL` (the URL) and `CONTACT_WEBHOOK_SECRET` (same value as `SECRET`) for Production and Preview, then redeploy. See `.env.example`.
+5. Open `/api/contact` on the deployed site in a browser. It checks the connection (nothing is saved) and says exactly what to fix if something's wrong.
+
+After editing the script, publish the change with **Deploy → Manage deployments → ✎ Edit → Version: New version → Deploy** — the web app keeps running the old version until you do. If a message fails to send, the reason is also written to the Vercel logs (lines starting with `[contact]`).
 
 Each enquiry appears in the "Enquiries" tab (downloadable as Excel) and arrives as an email with Reply-To set to the sender. Until the variables are set, the form shows a friendly "please email us" message. The static preview build can't send messages and says so.
 

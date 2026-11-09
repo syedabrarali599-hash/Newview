@@ -1,19 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { revealHeading } from "@/lib/animations";
 import styles from "./StackGame.module.css";
 
 /**
  * "Pixel Stack" — a falling-blocks puzzle played on the contact page grid.
- * Blocks fall from the top; ← → move, ↑ rotates, ↓ drops faster, Space drops
- * instantly. Fill a row to clear it. On touch screens: tap to rotate, swipe
- * left/right to move, swipe down to drop.
+ * The whole frame is the playfield; the score, the next piece and the
+ * controls sit in a panel at the bottom right. ← → move, ↑ rotates, ↓ drops
+ * faster, Space drops instantly. Fill a row to clear it. On touch screens:
+ * tap to rotate, swipe left/right to move, swipe down to drop.
  */
 
-const CELL = 19; // matches the 19px grid in the design
-const WELL_W = 10;
+const GRID = 19; // the 19px grid in the design
+const CELL = GRID * 2; // every block covers 2 × 2 grid squares
+const HUD_COLS = 6; // columns kept free on the right for the score panel
+const COMPACT_BELOW = 720; // narrower than this, the panel becomes a bar under the field
 const INK = "#220d04";
 
 type Shape = number[][];
@@ -32,9 +35,26 @@ const PIECES: PieceDef[] = [
 const rotateCW = (m: Shape): Shape => m[0].map((_, i) => m.map((r) => r[i]).reverse());
 const rotateCCW = (m: Shape): Shape => rotateCW(rotateCW(rotateCW(m)));
 
+/** Drops the empty rows and columns around a shape (for the preview). */
+const trim = (m: Shape): Shape => {
+  const rows = m.filter((r) => r.some(Boolean));
+  const used = rows[0].map((_, i) => rows.some((r) => r[i]));
+  return rows.map((r) => r.filter((_, i) => used[i]));
+};
+
 type Piece = { shape: Shape; color: string; x: number; y: number };
 type Spark = { x: number; y: number; vx: number; vy: number; life: number; color: string };
 type Phase = "intro" | "playing" | "paused" | "over";
+type Hud = { score: number; lines: number; level: number; best: number; next: PieceDef | null };
+type Layout = { compact: boolean; style: CSSProperties };
+
+/** Arrow keys and Space light up their key cap in the panel. */
+const KEY_CAP: Record<string, string> = {
+  ArrowLeft: "left",
+  ArrowRight: "right",
+  ArrowUp: "up",
+  ArrowDown: "down",
+};
 
 const BEST_KEY = "newview-pixel-stack-best";
 const readBest = () => {
@@ -57,8 +77,8 @@ export default function StackGame() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const card = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<Phase>("intro");
-  const [hud, setHud] = useState({ score: 0, lines: 0, level: 1, best: 0 });
-  const [layout, setLayout] = useState({ wellX: 0, cols: 0, rows: 0 });
+  const [hud, setHud] = useState<Hud>({ score: 0, lines: 0, level: 1, best: 0, next: null });
+  const [layout, setLayout] = useState<Layout>({ compact: false, style: {} });
   const phaseRef = useRef<Phase>("intro");
   const api = useRef<{ start: () => void; resume: () => void; pause: () => void } | null>(null);
 
@@ -75,9 +95,12 @@ export default function StackGame() {
     const cv = canvas.current!;
     const ctx = cv.getContext("2d")!;
 
+    let width = 0;
+    let height = 0;
+    let compact = false;
     let cols = 0;
     let rows = 0;
-    let wellX = 0;
+    let offY = 0; // the field sits on the bottom of the frame
     let board: (string | null)[][] = [];
     let piece: Piece | null = null;
     let next: PieceDef = PIECES[0];
@@ -94,21 +117,52 @@ export default function StackGame() {
     let raf = 0;
     let last = 0;
 
+    const emptyRow = () => Array<string | null>(cols).fill(null);
+
     const nextFromBag = () => {
       if (!bag.length) bag = [0, 1, 2, 3, 4, 5, 6].sort(() => Math.random() - 0.5);
       return PIECES[bag.pop()!];
     };
 
+    const syncHud = () => setHud((h) => ({ ...h, score, lines, level, next }));
+
     const resize = () => {
       const r = el.getBoundingClientRect();
-      cols = Math.floor(r.width / CELL);
-      rows = Math.floor(r.height / CELL);
-      wellX = Math.max(0, Math.floor((cols - WELL_W) / 2));
-      cv.width = Math.round(r.width);
-      cv.height = Math.round(r.height);
-      // Keep the board if the size didn't change rows (e.g. scrollbar shifts).
-      if (board.length !== rows) board = Array.from({ length: rows }, () => Array(WELL_W).fill(null));
-      setLayout({ wellX, cols, rows });
+      width = Math.round(r.width);
+      height = Math.round(r.height);
+      cv.width = width;
+      cv.height = height;
+
+      const gx = Math.floor(width / GRID);
+      const gy = Math.floor(height / GRID);
+      compact = width < COMPACT_BELOW;
+      const nextCols = Math.max(6, Math.floor(gx / 2) - (compact ? 0 : HUD_COLS));
+      const nextRows = Math.max(8, Math.floor(gy / 2) - (compact ? 1 : 0));
+      offY = Math.max(0, gy - (nextRows + (compact ? 1 : 0)) * 2) * GRID;
+
+      if (nextCols !== cols || nextRows !== rows) {
+        if (clearing) finishClear();
+        // Keep the stack (bottom-aligned) if the frame changes size mid-game.
+        const old = board;
+        const oldRows = rows;
+        board = Array.from({ length: nextRows }, (_, j) => {
+          const src = old[oldRows - nextRows + j];
+          return Array.from({ length: nextCols }, (_, i) => src?.[i] ?? null);
+        });
+        cols = nextCols;
+        rows = nextRows;
+        if (piece) piece.x = Math.max(0, Math.min(piece.x, cols - piece.shape[0].length));
+      }
+
+      const fieldW = cols * CELL;
+      setLayout(
+        compact
+          ? { compact, style: { left: 0, top: offY + rows * CELL, width, height: CELL } }
+          : {
+              compact,
+              style: { left: fieldW + GRID, bottom: height - gy * GRID + GRID, width: width - fieldW - GRID * 2 },
+            },
+      );
       draw();
     };
 
@@ -118,7 +172,7 @@ export default function StackGame() {
           if (!shape[j][i]) continue;
           const bx = x + i;
           const by = y + j;
-          if (bx < 0 || bx >= WELL_W || by >= rows) return true;
+          if (bx < 0 || bx >= cols || by >= rows) return true;
           if (by >= 0 && board[by][bx]) return true;
         }
       return false;
@@ -128,13 +182,18 @@ export default function StackGame() {
       const def = next;
       next = nextFromBag();
       const size = def.shape.length;
-      piece = { shape: def.shape, color: def.color, x: Math.floor((WELL_W - size) / 2), y: def.shape[0].every((v) => !v) ? -1 : 0 };
+      piece = {
+        shape: def.shape,
+        color: def.color,
+        x: Math.floor((cols - size) / 2),
+        y: def.shape[0].every((v) => !v) ? -1 : 0,
+      };
       lockTimer = 0;
       lockMoves = 0;
+      dropTimer = 0;
+      syncHud();
       if (collides(piece.shape, piece.x, piece.y)) gameOver();
     };
-
-    const syncHud = () => setHud((h) => ({ ...h, score, lines, level }));
 
     const lock = () => {
       if (!piece) return;
@@ -154,10 +213,10 @@ export default function StackGame() {
           board[j].forEach((c, i) => {
             for (let k = 0; k < 3; k++)
               sparks.push({
-                x: (wellX + i + 0.5) * CELL,
-                y: (j + 0.5) * CELL,
-                vx: (Math.random() - 0.5) * 260,
-                vy: -Math.random() * 260 - 60,
+                x: (i + 0.5) * CELL,
+                y: offY + (j + 0.5) * CELL,
+                vx: (Math.random() - 0.5) * 340,
+                vy: -Math.random() * 320 - 80,
                 life: 1,
                 color: c ?? "#e85313",
               });
@@ -165,24 +224,29 @@ export default function StackGame() {
         );
         score += [0, 100, 300, 500, 800][full.length] * level;
         lines += full.length;
-        level = 1 + Math.floor(lines / 10);
+        level = 1 + Math.floor(lines / 6);
+        syncHud();
       } else spawn();
-      syncHud();
     };
 
-    const finishClear = () => {
+    function finishClear() {
       if (!clearing) return;
-      const keep = board.filter((_, j) => !clearing!.rows.includes(j));
-      board = [...Array.from({ length: clearing.rows.length }, () => Array(WELL_W).fill(null)), ...keep];
+      const cleared = clearing.rows;
+      const keep = board.filter((_, j) => !cleared.includes(j));
+      board = [...Array.from({ length: cleared.length }, emptyRow), ...keep];
       clearing = null;
       spawn();
+    }
+
+    const bumpLock = () => {
+      if (lockTimer > 0 && lockMoves++ < 15) lockTimer = 0;
     };
 
     const move = (dx: number) => {
       if (!piece || clearing) return;
       if (!collides(piece.shape, piece.x + dx, piece.y)) {
         piece.x += dx;
-        if (lockTimer > 0 && lockMoves++ < 15) lockTimer = 0;
+        bumpLock();
       }
     };
 
@@ -194,7 +258,7 @@ export default function StackGame() {
           piece.shape = shape;
           piece.x += kx;
           piece.y += ky;
-          if (lockTimer > 0 && lockMoves++ < 15) lockTimer = 0;
+          bumpLock();
           return;
         }
       }
@@ -217,76 +281,71 @@ export default function StackGame() {
 
     const gameOver = () => {
       piece = null;
-      setPhaseBoth("over");
+      softDrop = false;
       if (score > readBest()) writeBest(score);
-      setHud({ score, lines, level, best: Math.max(score, readBest()) });
+      setHud({ score, lines, level, best: Math.max(score, readBest()), next });
+      setPhaseBoth("over");
       draw();
     };
 
     // ---------- Drawing ----------
-    const block = (x: number, y: number, color: string, alpha = 1) => {
-      const px = x * CELL;
-      const py = y * CELL;
-      ctx.globalAlpha = alpha;
+    /** One 38px block with a pixel bevel, sitting inside a 2 × 2 grid patch. */
+    const block = (i: number, j: number, color: string) => {
+      const x = i * CELL + 1;
+      const y = offY + j * CELL + 1;
+      const s = CELL - 1;
+      const b = 5;
       ctx.fillStyle = color;
-      ctx.fillRect(px + 1, py + 1, CELL - 1, CELL - 1);
-      ctx.fillStyle = "rgba(255,255,255,0.32)";
-      ctx.fillRect(px + 1, py + 1, CELL - 1, 3);
-      ctx.fillRect(px + 1, py + 4, 3, CELL - 4);
-      ctx.fillStyle = "rgba(0,0,0,0.18)";
-      ctx.fillRect(px + 1, py + CELL - 3, CELL - 1, 3);
-      ctx.fillRect(px + CELL - 3, py + 1, 3, CELL - 4);
-      ctx.globalAlpha = 1;
+      ctx.fillRect(x, y, s, s);
+      ctx.fillStyle = "rgba(255,255,255,0.3)";
+      ctx.fillRect(x, y, s, b);
+      ctx.fillRect(x, y + b, b, s - b);
+      ctx.fillStyle = "rgba(0,0,0,0.2)";
+      ctx.fillRect(x + b, y + s - b, s - b, b);
+      ctx.fillRect(x + s - b, y + b, b, s - b * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.fillRect(x + b, y + b, b, b);
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, cv.width, cv.height);
       // Before the first game the grid stays plain, as in the design.
       if (!rows || phaseRef.current === "intro") return;
-      // The well
-      ctx.fillStyle = "rgba(255,255,255,0.75)";
-      ctx.fillRect(wellX * CELL, 0, WELL_W * CELL + 1, rows * CELL + 1);
-      ctx.fillStyle = "rgba(34,13,4,0.35)";
-      ctx.fillRect(wellX * CELL - 1, 0, 2, rows * CELL + 1);
-      ctx.fillRect((wellX + WELL_W) * CELL, 0, 2, rows * CELL + 1);
+
+      // The right-hand wall of the field (the panel lives past it).
+      if (!compact) {
+        const wall = cols * CELL;
+        ctx.fillStyle = "rgba(255,255,255,0.45)";
+        ctx.fillRect(wall + 1, 0, width - wall, height);
+        ctx.fillStyle = "rgba(34,13,4,0.22)";
+        ctx.fillRect(wall, 0, 2, height);
+      }
 
       board.forEach((row, j) =>
         row.forEach((c, i) => {
           if (!c) return;
           const flashing = clearing?.rows.includes(j);
-          if (flashing) {
-            const on = Math.floor(clearing!.t * 14) % 2 === 0;
-            block(wellX + i, j, on ? "#ffffff" : c);
-          } else block(wellX + i, j, c);
+          if (flashing) block(i, j, Math.floor(clearing!.t * 14) % 2 === 0 ? "#ffffff" : c);
+          else block(i, j, c);
         }),
       );
 
       if (piece) {
         const gy = ghostY();
         const p = piece;
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.5;
         p.shape.forEach((row, j) =>
           row.forEach((v, i) => {
             if (!v || gy + j < 0) return;
-            ctx.strokeStyle = p.color;
-            ctx.globalAlpha = 0.45;
-            ctx.lineWidth = 2;
-            ctx.strokeRect((wellX + p.x + i) * CELL + 2, (gy + j) * CELL + 2, CELL - 3, CELL - 3);
-            ctx.globalAlpha = 1;
+            ctx.strokeRect((p.x + i) * CELL + 3, offY + (gy + j) * CELL + 3, CELL - 5, CELL - 5);
           }),
         );
+        ctx.globalAlpha = 1;
         p.shape.forEach((row, j) =>
           row.forEach((v, i) => {
-            if (v && p.y + j >= 0) block(wellX + p.x + i, p.y + j, p.color);
-          }),
-        );
-      }
-
-      // Next piece, to the right of the well
-      if (cols >= wellX + WELL_W + 6) {
-        const nx = wellX + WELL_W + 2;
-        next.shape.forEach((row, j) =>
-          row.forEach((v, i) => {
-            if (v) block(nx + i, 3 + j, next.color);
+            if (v && p.y + j >= 0) block(p.x + i, p.y + j, p.color);
           }),
         );
       }
@@ -294,13 +353,13 @@ export default function StackGame() {
       for (const s of sparks) {
         ctx.globalAlpha = Math.max(0, s.life);
         ctx.fillStyle = s.color;
-        ctx.fillRect(Math.round(s.x), Math.round(s.y), 5, 5);
+        ctx.fillRect(Math.round(s.x), Math.round(s.y), 7, 7);
       }
       ctx.globalAlpha = 1;
     };
 
     // ---------- Loop ----------
-    const interval = () => (softDrop ? 40 : Math.max(70, 800 - (level - 1) * 75));
+    const interval = () => (softDrop ? 45 : Math.max(90, 850 - (level - 1) * 70));
 
     const tick = (now: number) => {
       const dt = Math.min(50, now - (last || now));
@@ -346,10 +405,16 @@ export default function StackGame() {
     };
 
     // ---------- Controls ----------
+    const keyCap = (key: string) => {
+      const id = key === " " || key === "Spacebar" ? "space" : KEY_CAP[key];
+      return id ? el.querySelector<HTMLElement>(`[data-key="${id}"]`) : null;
+    };
+
     const onKey = (e: KeyboardEvent) => {
       if (phaseRef.current !== "playing") return;
       const keys = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp", " ", "Spacebar"];
       if (keys.includes(e.key)) e.preventDefault();
+      keyCap(e.key)?.setAttribute("data-down", "true");
       if (e.key === "ArrowLeft") move(-1);
       else if (e.key === "ArrowRight") move(1);
       else if (e.key === "ArrowUp" || e.key === "x" || e.key === "X") rotate(1);
@@ -361,14 +426,15 @@ export default function StackGame() {
       draw();
     };
     const onKeyUp = (e: KeyboardEvent) => {
+      keyCap(e.key)?.removeAttribute("data-down");
       if (e.key === "ArrowDown") softDrop = false;
     };
 
     // Touch: tap rotates, swipe moves, swipe down drops.
-    let touchStart: { x: number; y: number; t: number } | null = null;
+    let touchStart: { x: number; y: number } | null = null;
     const onPointerDown = (e: PointerEvent) => {
       if (e.pointerType !== "touch" || phaseRef.current !== "playing") return;
-      touchStart = { x: e.clientX, y: e.clientY, t: performance.now() };
+      touchStart = { x: e.clientX, y: e.clientY };
     };
     const onPointerUp = (e: PointerEvent) => {
       if (!touchStart || e.pointerType !== "touch") return;
@@ -384,16 +450,16 @@ export default function StackGame() {
     };
 
     const start = () => {
-      board = Array.from({ length: rows }, () => Array(WELL_W).fill(null));
+      board = Array.from({ length: rows }, emptyRow);
       bag = [];
       next = nextFromBag();
       score = 0;
       lines = 0;
       level = 1;
       dropTimer = 0;
+      softDrop = false;
       clearing = null;
       sparks = [];
-      syncHud();
       setPhaseBoth("playing");
       spawn();
       el.focus({ preventScroll: true });
@@ -485,7 +551,7 @@ export default function StackGame() {
   );
 
   const playing = phase === "playing";
-  const hudLeft = Math.max(0, (layout.wellX - 7) * CELL);
+  const preview = hud.next ? trim(hud.next.shape) : null;
 
   return (
     <div
@@ -501,38 +567,55 @@ export default function StackGame() {
       <canvas ref={canvas} className={styles.canvas} aria-hidden="true" />
 
       {phase !== "intro" && (
-        <div className={styles.hud} style={{ left: hudLeft, top: 2 * CELL }} aria-live="polite">
-          <p>
-            <span>Score</span>
-            <strong>{hud.score.toLocaleString()}</strong>
-          </p>
-          <p>
-            <span>Lines</span>
-            <strong>{hud.lines}</strong>
-          </p>
-          <p>
-            <span>Level</span>
-            <strong>{hud.level}</strong>
-          </p>
-          {hud.best > 0 && (
-            <p>
-              <span>Best</span>
-              <strong>{hud.best.toLocaleString()}</strong>
+        <div className={styles.hud} data-compact={layout.compact} style={layout.style}>
+          <dl className={styles.stats}>
+            <div>
+              <dt>Score</dt>
+              <dd>{hud.score.toLocaleString()}</dd>
+            </div>
+            <div>
+              <dt>Lines</dt>
+              <dd>{hud.lines}</dd>
+            </div>
+            <div data-extra>
+              <dt>Level</dt>
+              <dd>{hud.level}</dd>
+            </div>
+            <div data-extra>
+              <dt>Best</dt>
+              <dd>{Math.max(hud.best, hud.score).toLocaleString()}</dd>
+            </div>
+          </dl>
+
+          <div className={styles.next}>
+            <span className={styles.label}>Next</span>
+            {preview && hud.next && (
+              <div
+                key={hud.next.color}
+                className={styles.preview}
+                style={{ gridTemplateColumns: `repeat(${preview[0].length}, var(--pv))`, color: hud.next.color }}
+                aria-hidden="true"
+              >
+                {preview.flat().map((v, i) => (
+                  <i key={i} data-on={v ? "true" : undefined} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.controls}>
+            <div className={styles.keys} aria-hidden="true">
+              <kbd data-key="up">↑</kbd>
+              <kbd data-key="left">←</kbd>
+              <kbd data-key="down">↓</kbd>
+              <kbd data-key="right">→</kbd>
+            </div>
+            <p>Use the arrow keys to play</p>
+            <p className={styles.more}>
+              <kbd data-key="space">Space</kbd> drops · <kbd>P</kbd> pauses
             </p>
-          )}
-          <ul className={styles.controls} aria-label="Controls">
-            <li>← → Move</li>
-            <li>↑ Rotate</li>
-            <li>↓ Faster</li>
-            <li>Space Drop</li>
-            <li>P Pause</li>
-          </ul>
+          </div>
         </div>
-      )}
-      {phase !== "intro" && layout.cols >= layout.wellX + WELL_W + 6 && (
-        <p className={styles.nextLabel} style={{ left: (layout.wellX + WELL_W + 2) * CELL, top: CELL }}>
-          Next
-        </p>
       )}
 
       <div ref={card} className={styles.card}>
@@ -551,7 +634,7 @@ export default function StackGame() {
         {phase === "over" && (
           <>
             <h2 className={styles.title}>Game over</h2>
-            <p className={styles.hint}>
+            <p className={styles.hint} role="status">
               You scored {hud.score.toLocaleString()} · Click anywhere to play again
             </p>
           </>

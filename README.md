@@ -64,7 +64,7 @@ Each enquiry appears in the "Enquiries" tab (downloadable as Excel) and arrives 
 
 ## Pixel Stack (contact page game)
 
-A falling-blocks puzzle on the contact-page grid (`components/contact/StackGame.tsx`): click the grid to start; ← → move, ↑ rotates, ↓ drops faster, Space drops instantly, P pauses; on touch screens tap to rotate, swipe to move, swipe down to drop. Full rows clear in a burst of pixels; the score, level and best score (saved in the browser) show beside the board. It pauses automatically when scrolled out of view.
+A falling-blocks puzzle on the contact-page grid (`components/contact/StackGame.tsx`): click the grid to start; ← → move, ↑ rotates, ↓ drops faster, Space drops instantly, P pauses; on touch screens tap to rotate, swipe to move, swipe down to drop. The whole grid is the playfield, with 38px blocks (2 × 2 grid squares). Full rows clear in a burst of pixels. A panel at the bottom right shows the score, lines, level, best score (saved in the browser), the next piece and the arrow-key controls; on phones it becomes a slim bar under the field. It pauses automatically when scrolled out of view.
 
 ## Copy changes
 

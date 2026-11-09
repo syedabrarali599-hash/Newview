@@ -131,7 +131,11 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  transition: transform 0.6s var(--ease);
+  transition:
+    margin 0.6s var(--ease),
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .you {
@@ -167,15 +171,38 @@
   color: #fff;
 }
 
+/* The plus sits in the overlap and shows once the avatars part; the gap
+   opens with a margin so the whole row re-centres instead of crowding the text. */
+.plus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    opacity 0.3s ease,
+    transform 0.6s var(--ease);
+}
+
 .bookCall[data-pixel-active="true"] .you {
-  transform: translateX(-4px);
   background: #fff;
   color: var(--ink);
   box-shadow: 0 0 0 2px #220d04;
 }
 
 .bookCall[data-pixel-active="true"] .us {
-  transform: translateX(4px) rotate(-90deg);
+  margin-left: 14px;
+}
+
+.bookCall[data-pixel-active="true"] .plus {
+  opacity: 1;
+  transform: scale(1);
+  transition-delay: 0.08s;
 }
 
 /* ---------- Contact channels ---------- */

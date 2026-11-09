@@ -80,9 +80,9 @@
 .title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(52px, 5vw, 72px);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-size: clamp(52px, 5.97vw, 86px); /* Figma: 86/86, -0.86px */
+  line-height: 1;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 
@@ -96,16 +96,18 @@
 .rule {
   width: 100%;
   height: 1px;
-  margin: 40px 0;
+  margin: 40px 0 39px; /* Figma's line is 0 tall, so the 1px rule takes 1px off the gap */
   border: 0;
-  background: rgba(34, 13, 4, 0.1);
+  background: #e8e4dd;
   transform-origin: left;
 }
 
-/* ---------- Book a Free Call ---------- */
+/* ---------- Book a Free Call ----------
+   Figma component "Book a Free Call": default (white) and hover (black,
+   avatars 4px apart with a "+" between them). */
 .bookCall {
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --pixel-fill: #220d04;
+  --pixel-fill: #000000;
   position: relative;
   display: flex;
   align-items: center;
@@ -128,14 +130,9 @@
 .us {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  transition:
-    margin 0.6s var(--ease),
-    background-color 0.3s ease,
-    color 0.3s ease,
-    box-shadow 0.3s ease;
 }
 
 .you {
@@ -143,27 +140,54 @@
   background: var(--ink);
   color: #fff;
   font-family: var(--font-ui);
-  font-size: 9px;
+  font-size: 11px;
+  line-height: 13.3px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.04em;
   box-shadow: 0 0 0 2px #fff;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .us {
-  margin-left: -6px;
   background: var(--orange);
 }
 
 .usMark {
-  width: 15px;
+  width: 15.6px;
   height: auto;
+}
+
+/* The "+" is 11px wide. At rest its negative margins collapse it into the
+   overlap, so the circles overlap by 10px (Figma gap -10); on hover the margins
+   open to 4px either side (Figma gap 4) and the row re-centres. */
+.plus {
+  position: relative;
+  z-index: 2;
+  width: 11px;
+  margin: 0 -10.5px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-align: center;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    margin 0.6s var(--ease),
+    opacity 0.3s ease,
+    transform 0.6s var(--ease);
 }
 
 .bookText {
   font-family: var(--font-display);
-  font-size: 20px;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 0;
   transition: color 0.3s ease 0.08s;
 }
 
@@ -171,38 +195,17 @@
   color: #fff;
 }
 
-/* The plus sits in the overlap and shows once the avatars part; the gap
-   opens with a margin so the whole row re-centres instead of crowding the text. */
-.plus {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  width: 9px;
-  height: 9px;
-  margin: -4.5px 0 0 -4.5px;
-  color: #fff;
-  opacity: 0;
-  transform: scale(0);
-  transition:
-    opacity 0.3s ease,
-    transform 0.6s var(--ease);
-}
-
 .bookCall[data-pixel-active="true"] .you {
   background: #fff;
-  color: var(--ink);
-  box-shadow: 0 0 0 2px #220d04;
-}
-
-.bookCall[data-pixel-active="true"] .us {
-  margin-left: 14px;
+  color: #000;
+  box-shadow: 0 0 0 2px #000;
 }
 
 .bookCall[data-pixel-active="true"] .plus {
+  margin: 0 4px;
   opacity: 1;
   transform: scale(1);
-  transition-delay: 0.08s;
+  transition-delay: 0s, 0.08s, 0.08s;
 }
 
 /* ---------- Contact channels ---------- */
@@ -253,7 +256,7 @@
 
 .channelValue {
   font-size: 18px;
-  line-height: 22px;
+  line-height: 21.6px;
   color: var(--ink);
   transition: color 0.3s ease;
 }
@@ -262,16 +265,69 @@
   color: var(--orange);
 }
 
-/* ---------- Form card ---------- */
-.formCard {
+/* ---------- Form card ----------
+   Exact values from the Figma "Contact Us" form card. */
+.formFrame {
+  position: relative;
   margin-top: 6px;
+}
+
+.formCard {
+  position: relative;
+  overflow: hidden;
   padding: 32px;
-  min-height: 572px;
   background: var(--orange);
-  color: #fff;
+  color: #fcf8f0;
+  box-shadow:
+    0 0 0 2px #cf4a11, /* stroke: 2px #cf4a11, outside */
+    inset 0 0 8px rgba(29, 11, 3, 0.34); /* inner shadow: 0 0 8px #1d0b03 @ 34% */
+}
+
+/* The soft white shape behind the fields (888 × 796, centred +49 / +76). */
+.formShine {
+  position: absolute;
+  left: calc(50% - 395px);
+  top: calc(50% - 322px);
+  width: 888px;
+  height: 796px;
+  max-width: none; /* the global svg max-width would shrink it to the card */
+  pointer-events: none;
+}
+
+/* Selection handles on the card's corners. */
+.handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--orange);
+  box-shadow:
+    inset 0 0 0 2px #fff, /* stroke: 2px #fff, inside */
+    0 5px 8px rgba(34, 13, 4, 0.14); /* drop shadow: 0 5px 8px #220d04 @ 14% */
+  pointer-events: none;
+}
+
+.handle[data-pos="tl"] {
+  left: -10px;
+  top: -14px;
+}
+
+.handle[data-pos="tr"] {
+  right: -10px;
+  top: -14px;
+}
+
+.handle[data-pos="bl"] {
+  left: -10px;
+  bottom: -10px;
+}
+
+.handle[data-pos="br"] {
+  right: -10px;
+  bottom: -10px;
 }
 
 .form {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -297,21 +353,24 @@
 }
 
 .label {
+  font-family: var(--font-ui);
   font-size: 14px;
   line-height: 20px;
-  color: #fff;
+  color: #fcf8f0;
 }
 
 .input {
   width: 100%;
   height: 44px;
-  padding: 0 12px;
+  padding: 10px 12px;
   font: inherit;
+  font-family: var(--font-ui);
   font-size: 16px;
-  color: #fff;
+  line-height: 24px;
+  color: #fcf8f0;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
   outline: none;
   transition:
     border-color 0.25s ease,
@@ -320,7 +379,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(252, 248, 240, 0.8);
 }
 
 .input:hover {
@@ -339,10 +398,8 @@
 }
 
 .textarea {
-  height: 110px;
-  padding: 10px 12px;
-  line-height: 1.4;
-  resize: vertical;
+  height: 130px;
+  resize: none;
 }
 
 .error {
@@ -362,14 +419,24 @@
   overflow: hidden;
 }
 
-.send {
+.form .send {
   height: 50px;
   width: 100%;
+  padding: 12px 24px;
+  font-family: var(--font-ui);
+  font-weight: 500;
   font-size: 18px;
-  color: var(--ink);
+  line-height: 26px;
+  letter-spacing: -0.03em;
+  color: #0d2025;
+  background: #fcf8f0;
 }
 
-.send:disabled {
+.form .send[data-pixel-active="true"] {
+  color: #fff;
+}
+
+.form .send:disabled {
   cursor: progress;
   opacity: 0.85;
 }
@@ -430,7 +497,7 @@
   }
 
   .intro,
-  .formCard {
+  .formFrame {
     max-width: 640px;
   }
 }

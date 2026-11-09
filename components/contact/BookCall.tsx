@@ -14,9 +14,7 @@ export default function BookCall({ className = "" }: { className?: string }) {
     <a href={CONTACT_PAGE.bookingHref} className={`${styles.bookCall} ${className}`} data-pixel-hover>
       <span className={styles.avatars} aria-hidden="true">
         <span className={styles.you}>YOU</span>
-        <svg className={styles.plus} viewBox="0 0 10 10" aria-hidden="true">
-          <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" />
-        </svg>
+        <span className={styles.plus}>+</span>
         <span className={styles.us}>
           <LogoMark className={styles.usMark} color="#ffffff" />
         </span>

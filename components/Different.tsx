@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { CONTACT_HREF } from "@/lib/site";
+import { CONTACT_PATH } from "@/lib/site";
 import { LOGO_PATHS, LOGO_VIEWBOX } from "./Logo";
 import styles from "./Different.module.css";
 
@@ -176,7 +176,7 @@ export default function Different() {
           </ul>
         </div>
 
-        <a href={CONTACT_HREF} className={`btn ${styles.cta} js-reveal`}>
+        <a href={CONTACT_PATH} className={`btn ${styles.cta} js-reveal`}>
           Work with us <span className="btn-arrow">→</span>
         </a>
       </div>

@@ -1,0 +1,153 @@
+/* The grid area from the design: 1280 × 514 with a 19px grid. */
+.game {
+  position: relative;
+  max-width: 1280px;
+  height: 514px;
+  margin: 0 auto;
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(to right, rgba(34, 13, 4, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 13, 4, 0.06) 1px, transparent 1px);
+  background-size: 19px 19px;
+  box-shadow: inset -1px -1px 0 rgba(34, 13, 4, 0.06);
+  overflow: hidden;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game:focus-visible {
+  box-shadow:
+    inset -1px -1px 0 rgba(34, 13, 4, 0.06),
+    0 0 0 2px var(--orange);
+}
+
+/* While playing, swipes control the game instead of scrolling the page. */
+.game[data-playing="true"] {
+  cursor: default;
+  touch-action: none;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 28px;
+  min-width: min(334px, 90%);
+  background: #fff;
+  text-align: center;
+  pointer-events: none;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.hint {
+  font-size: 18px;
+  line-height: 1.45;
+  color: var(--ink-70);
+}
+
+.hud {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  min-width: 112px;
+  background: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+
+.hud p {
+  display: flex;
+  flex-direction: column;
+}
+
+.hud span {
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-50);
+}
+
+.hud strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1.15;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.nextLabel {
+  position: absolute;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-50);
+  pointer-events: none;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 0;
+  padding: 10px 0 0;
+  list-style: none;
+  border-top: 1px solid rgba(34, 13, 4, 0.1);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-50);
+}
+
+@media (max-width: 720px) {
+  .game {
+    height: 456px;
+  }
+
+  .hud {
+    left: 8px !important;
+    top: 8px !important;
+    min-width: 0;
+    padding: 8px 10px;
+    gap: 4px;
+  }
+
+  .hud strong {
+    font-size: 18px;
+  }
+
+  .controls {
+    display: none;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .hint {
+    font-size: 16px;
+  }
+}

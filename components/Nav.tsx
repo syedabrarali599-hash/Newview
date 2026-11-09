@@ -2,21 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP, EASE } from "@/lib/gsap";
-import { scrollToTarget, useExperience } from "@/lib/experience";
+import { useExperience } from "@/lib/experience";
 import { LogoMark } from "./Logo";
 import styles from "./Nav.module.css";
 
 /** The essentials only; every other section is a scroll away. */
 export const NAV_LINKS = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Work", href: "#work" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/", section: "#top" },
+  { label: "About", href: "/#about", section: "#about" },
+  { label: "Services", href: "/#services", section: "#services" },
+  { label: "Work", href: "/#work", section: "#work" },
+  { label: "Contact", href: "/contact", section: "" },
 ];
 
 export default function Nav() {
-  const { ready, lenis } = useExperience();
+  const { ready, lenis, navigate } = useExperience();
   const ref = useRef<HTMLElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState("#top");
@@ -61,8 +61,8 @@ export default function Nav() {
           else hide(self.direction === 1 ? -130 : 0);
         },
       });
-      NAV_LINKS.forEach(({ href }) => {
-        const section = document.querySelector(href);
+      NAV_LINKS.forEach(({ href, section: id }) => {
+        const section = id ? document.querySelector(id) : null;
         if (!section) return;
         ScrollTrigger.create({
           trigger: section,
@@ -104,14 +104,8 @@ export default function Nav() {
     e.preventDefault();
     setOpen(false);
     // Let the menu start closing before the page glides away.
-    const run = () => {
-      if (href === "#top") {
-        if (lenis) lenis.scrollTo(0, { duration: 1.6, force: true });
-        else window.scrollTo({ top: 0, behavior: "smooth" });
-        return;
-      }
-      scrollToTarget(lenis, href);
-    };
+    const origin = { x: e.clientX, y: e.clientY };
+    const run = () => navigate(href, origin);
     if (open) setTimeout(run, 120);
     else run();
   };
@@ -119,7 +113,7 @@ export default function Nav() {
   return (
     <>
     <header ref={ref} className={`${styles.nav} js-reveal`} data-scrolled="false" data-open={open}>
-      <a href="#top" className={styles.brand} onClick={(e) => go(e, "#top")} aria-label="New View — home">
+      <a href="/" className={styles.brand} onClick={(e) => go(e, "/")} aria-label="New View — home">
         <LogoMark className={styles.mark} />
         <span className={styles.word}>New View</span>
       </a>

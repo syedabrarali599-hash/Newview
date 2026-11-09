@@ -43,6 +43,29 @@ which is how the hosted preview is published.
 
 Everything respects `prefers-reduced-motion`.
 
+## Pages
+
+- `/` — landing page (`components/LandingPage.tsx`).
+- `/contact` — contact page (`components/contact/`): "Let's Connect" intro, Book a Free Call, phone/WhatsApp/email, the enquiry form and the **Pixel Stack** game.
+
+Every CTA and "Contact" link leads to `/contact`; the logo and "< Home" lead back to `/`. Moving between pages uses a pixel transition (`lib/pixelWipe.ts`, `components/SiteShell.tsx`): orange pixels grow from where you clicked to cover the screen, then dissolve to reveal the next page. The loading animation only plays on the very first visit.
+
+## Contact form
+
+The form posts to `/api/contact` (`app/api/contact/route.ts`), which validates the message, filters spam (hidden honeypot field + a simple rate limit) and forwards it to a **Google Apps Script** that adds a row to a Google Sheet and emails you.
+
+One-time setup (about 5 minutes):
+
+1. Create a Google Sheet, open **Extensions → Apps Script**, paste `integrations/google-apps-script/contact-form.gs`, and set `NOTIFY_EMAIL` and `SECRET` at the top.
+2. **Deploy → New deployment → Web app**, *Execute as: Me*, *Who has access: Anyone*. Copy the web app URL.
+3. In Vercel → Project → Settings → Environment Variables add `CONTACT_WEBHOOK_URL` (the URL) and `CONTACT_WEBHOOK_SECRET` (same value as `SECRET`), then redeploy. See `.env.example`.
+
+Each enquiry appears in the "Enquiries" tab (downloadable as Excel) and arrives as an email with Reply-To set to the sender. Until the variables are set, the form shows a friendly "please email us" message. The static preview build can't send messages and says so.
+
+## Pixel Stack (contact page game)
+
+A falling-blocks puzzle on the contact-page grid (`components/contact/StackGame.tsx`): click the grid to start; ← → move, ↑ rotates, ↓ drops faster, Space drops instantly, P pauses; on touch screens tap to rotate, swipe to move, swipe down to drop. Full rows clear in a burst of pixels; the score, level and best score (saved in the browser) show beside the board. It pauses automatically when scrolled out of view.
+
 ## Copy changes
 
 The design's placeholder button labels were replaced:

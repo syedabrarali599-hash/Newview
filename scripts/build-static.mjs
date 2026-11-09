@@ -28,7 +28,7 @@ const result = await build({
     ".webp": "file",
     ".svg": "file",
   },
-  define: { "process.env.NODE_ENV": '"production"' },
+  define: { "process.env.NODE_ENV": '"production"', "process.env.NEXT_PUBLIC_STATIC_PREVIEW": '"1"' },
   tsconfig: "tsconfig.json",
   logLevel: "error",
 });

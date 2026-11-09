@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "@/resources/fonts/fonts.css";
 import "./globals.css";
 import logoMark from "@/resources/images/logo-mark.svg";
+import NextShell from "./NextShell";
 
 export const metadata: Metadata = {
   title: "New View — Every brand needs a new view",
@@ -21,9 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="is-loading" suppressHydrationWarning>
       <body>
         <noscript>
-          <style>{`.js-reveal{visibility:visible!important}html.is-loading,html.is-loading body{overflow:auto;height:auto}[data-loader]{display:none!important}`}</style>
+          <style>{`.js-reveal{visibility:visible!important}html.is-loading,html.is-loading body{overflow:auto;height:auto}[data-loader],[data-cover]{display:none!important}`}</style>
         </noscript>
-        {children}
+        <NextShell>{children}</NextShell>
       </body>
     </html>
   );

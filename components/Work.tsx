@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { gsap, ScrollTrigger, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { revealLines } from "@/lib/animations";
-import { CONTACT_HREF } from "@/lib/site";
+import { CONTACT_PATH } from "@/lib/site";
 import Heading from "./Heading";
 import { ASSETS } from "@/lib/assets";
 import styles from "./Work.module.css";
@@ -155,7 +155,7 @@ export default function Work() {
           </a>
         ))}
 
-        <a href={CONTACT_HREF} className={`${styles.card} ${styles.saved} js-reveal`}>
+        <a href={CONTACT_PATH} className={`${styles.card} ${styles.saved} js-reveal`}>
           <span className={styles.savedGrid} aria-hidden="true" />
           {SQUARES.map((sq) => (
             <span

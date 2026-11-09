@@ -2,15 +2,15 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { scrollToTarget, useExperience } from "@/lib/experience";
-import { CONTACT_EMAIL, CONTACT_HREF, CONTACT_PHONE } from "@/lib/site";
+import { useExperience } from "@/lib/experience";
+import { CONTACT_EMAIL, CONTACT_PATH, CONTACT_PHONE } from "@/lib/site";
 import styles from "./Footer.module.css";
 
 const NAV = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Work", href: "#work" },
-  { label: "Resources", href: "#work" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/#about" },
+  { label: "Work", href: "/#work" },
+  { label: "Resources", href: "/#work" },
 ];
 
 const SOCIALS = [
@@ -38,7 +38,7 @@ const SOCIALS = [
 
 export default function Footer() {
   const root = useRef<HTMLElement>(null);
-  const { lenis } = useExperience();
+  const { navigate } = useExperience();
 
   useGSAP(
     () => {
@@ -57,10 +57,7 @@ export default function Footer() {
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    if (href === "#top") {
-      if (lenis) lenis.scrollTo(0, { duration: 2 });
-      else window.scrollTo({ top: 0, behavior: "smooth" });
-    } else scrollToTarget(lenis, href);
+    navigate(href, { x: e.clientX, y: e.clientY });
   };
 
   return (
@@ -70,7 +67,7 @@ export default function Footer() {
           Every pixel has a purpose. We craft brands and digital experiences that are clear,
           memorable, and thoughtfully designed for lasting success.
         </p>
-        <a href={CONTACT_HREF} className={`btn ${styles.grow}`}>
+        <a href={CONTACT_PATH} className={`btn ${styles.grow}`}>
           Let&apos;s Grow Your Brand <span className="btn-arrow">→</span>
         </a>
       </div>

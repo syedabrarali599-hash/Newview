@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { CONTACT_HREF } from "@/lib/site";
+import { CONTACT_PATH } from "@/lib/site";
 import PixelCanvas, { type PixelCanvasHandle } from "./PixelCanvas";
 import { idea } from "./pixelArt.data";
 import styles from "./Cta.module.css";
@@ -76,7 +76,7 @@ export default function Cta() {
           <h2 id="cta-title" className={styles.heading}>
             Got a great idea you want to bring to life?
           </h2>
-          <a href={CONTACT_HREF} className={`btn btn--light ${styles.button}`}>
+          <a href={CONTACT_PATH} className={`btn btn--light ${styles.button}`}>
             Tell us your idea <span className="btn-arrow">→</span>
           </a>
         </div>

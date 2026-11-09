@@ -5,7 +5,7 @@ import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap
 import { useExperience } from "@/lib/experience";
 import Heading from "./Heading";
 import HeroPlayground from "./HeroPlayground";
-import { CONTACT_HREF } from "@/lib/site";
+import { CONTACT_PATH } from "@/lib/site";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
@@ -51,7 +51,7 @@ export default function Hero() {
             We bring you closer to the people designing your product, making collaboration clearer,
             feedback faster, and great ideas easier to bring to life.
           </p>
-          <a href={CONTACT_HREF} className={`btn ${styles.cta} js-reveal`}>
+          <a href={CONTACT_PATH} className={`btn ${styles.cta} js-reveal`}>
             <span className={styles.ctaLabel}>
               Tell us your idea <span className="btn-arrow">→</span>
             </span>

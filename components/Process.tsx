@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { CONTACT_HREF } from "@/lib/site";
+import { CONTACT_PATH } from "@/lib/site";
 import styles from "./Process.module.css";
 
 const STEPS = [
@@ -17,7 +17,7 @@ const STEPS = [
  *  outwards, like grabbing a frame to resize it. */
 function MakeItHappen() {
   return (
-    <a href={CONTACT_HREF} className={`${styles.box} js-reveal`} data-happen data-pixel-hover>
+    <a href={CONTACT_PATH} className={`${styles.box} js-reveal`} data-happen data-pixel-hover>
       {(["tl", "tr", "bl", "br"] as const).map((c) => (
         <span key={c} className={`${styles.handle} ${styles[c]}`} aria-hidden="true" />
       ))}

@@ -3,7 +3,7 @@
 import { useCallback, useRef } from "react";
 import { gsap, ScrollTrigger, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { revealHeading, revealLines } from "@/lib/animations";
-import { CONTACT_EMAIL } from "@/lib/site";
+import { CONTACT_PATH } from "@/lib/site";
 import Heading from "./Heading";
 import PixelCanvas, { type PixelCanvasHandle, type Scene } from "./PixelCanvas";
 import { nib, browser, blocks, megaphone } from "./pixelArt.data";
@@ -45,8 +45,6 @@ const SERVICES: Service[] = [
 
 const ARTS = [nib, browser, blocks, megaphone];
 
-const mailto = (s: Service) =>
-  `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`${s.title} project`)}`;
 
 function ServiceCard({ service, i }: { service: Service; i: number }) {
   const card = useRef<HTMLElement>(null);
@@ -97,7 +95,7 @@ function ServiceCard({ service, i }: { service: Service; i: number }) {
         </div>
         <div className={styles.foot} data-card-foot>
           <p className={`${styles.body} js-reveal`}>{service.body}</p>
-          <a href={mailto(service)} className={`btn ${styles.cta} js-reveal`}>
+          <a href={CONTACT_PATH} className={`btn ${styles.cta} js-reveal`}>
             {service.cta} <span className="btn-arrow">→</span>
           </a>
         </div>

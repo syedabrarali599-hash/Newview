@@ -1,0 +1,19 @@
+/* Solid orange shown from the very first paint on pages that start covered. */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: var(--orange);
+}
+
+/* Pixel transition canvas (cover / dissolve). */
+.wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 96;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  visibility: hidden;
+  image-rendering: pixelated;
+}

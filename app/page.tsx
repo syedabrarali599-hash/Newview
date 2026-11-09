@@ -1,5 +1,5 @@
-import Experience from "@/components/Experience";
+import LandingPage from "@/components/LandingPage";
 
 export default function Page() {
-  return <Experience />;
+  return <LandingPage />;
 }

@@ -1,0 +1,4 @@
+# Turn ids hidden from the public conversation log in memory.md (one per line).
+# "<id>" hides the whole turn; "<id> message-only" hides only what was written.
+f6f38ca6-4c1a-44f1-b69f-1af8ee9b972a
+e3c7515d-a4a1-4a8c-91c9-53d2f8f973f4 message-only

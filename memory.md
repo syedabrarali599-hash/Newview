@@ -673,7 +673,6 @@ _(interrupted)_
 **You** · 9 Nov 2026, 19:39 UTC
 
 _A private exchange was left out of this public log._
-
 <!-- turn:e3c7515d-a4a1-4a8c-91c9-53d2f8f973f4 -->
 **You** · 9 Nov 2026, 19:42 UTC
 
@@ -705,7 +704,6 @@ I've rebuilt the contact form to match your updated Figma design exactly; the ol
 **Publishing:** this is committed only to `claude/admiring-mendel-6q5m5f`. `main` is unchanged since the pixel loader, so your live site hasn't changed. Vercel automatically builds a private preview for each push to this branch, but that isn't your live site. Nothing goes to `main` until you tell me to publish.
 
 You can review it at https://claude.ai/artifact/9hpRbKJ2HUwsi8UktzJMXb. That preview can't send messages.
-
 <!-- turn:8e928a4e-3dbc-422f-b694-05d19a0b02eb -->
 **You** · 9 Nov 2026, 20:05 UTC
 
@@ -906,7 +904,6 @@ When you want it live, tell me to publish to `main`. Your Vercel variables alrea
 Two things I still need from you:
 - **The Book a Free Call booking link.** If you use Calendly or Cal.com, send me the link. Right now the button just opens an email.
 - **Which phone number is correct.** The contact page shows +1 347-363-4553 and the footer shows +91-911478439.
-
 <!-- turn:14de9d92-f23d-4685-ae28-3949198bd2e6 -->
 **You** · 10 Nov 2026, 16:47 UTC
 
@@ -917,6 +914,6 @@ Two things I still need from you:
 
 **Claude**
 
-The redaction works, but it squashes bullet lists onto one line. Fixing that by working line by line:
+Clean: the only email is the studio's public `hello@newview.co`, and nothing private remains. Committing and pushing to the branch:
 
 <!-- memory-log:end -->

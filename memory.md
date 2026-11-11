@@ -965,6 +965,36 @@ This reply will be added to the log at the next update. Like everything else her
 
 **Claude**
 
-Last step, as `CLAUDE.md` requires: updating the conversation log in `memory.md`.
+I've added your links across the site and pushed the change to the branch. I checked every link on both pages in a browser and each one goes to the right place.
+
+| What | Where it appears | Link |
+|---|---|---|
+| Instagram | Footer icon | instagram.com/hello.newview |
+| X | Footer icon | x.com/hellodotnewview |
+| Email | Footer and contact page | hello@newview.co (unchanged) |
+| Phone (+91 91801 38012) | Footer and contact page "Phone Call" | Taps to call |
+| WhatsApp | Contact page "Whatsapp" | Opens a WhatsApp chat with the same number |
+| Book a Free Call | Contact page button | Your Cal.com scheduling page |
+
+Instagram, X, WhatsApp and the Cal.com page open in a new tab, so visitors don't leave your site.
+
+**Please check:**
+- **Country code:** I read the number as an Indian mobile and added +91. The new number replaced both old ones: the +1 number on the contact page and the old +91 number in the footer.
+- **WhatsApp:** the WhatsApp link only works if this number has a WhatsApp account.
+
+**LinkedIn and Facebook:** the footer also had icons for these, pointing at the sites' home pages. You didn't send profiles for them, so I've hidden both icons rather than leave dead links. If you create those profiles, send me the links and they'll reappear.
+
+All contact details now live in one file, `lib/site.ts`, so future changes are a one-line edit.
+
+As usual, this is on `claude/admiring-mendel-6q5m5f` only; your live site hasn't changed. You can preview it at https://claude.ai/artifact/9hpRbKJ2HUwsi8UktzJMXb. `memory.md` is updated too.
+
+<!-- turn:ce0e8fb2-265f-4267-8870-909adf34e086 -->
+**You** · 11 Nov 2026, 20:24 UTC
+
+> For all the case study pages, like the cards that we have for the case studies, I want you to either build a page which says coming soon, or when you hover over those cards, the cursor should become a circle inside it should be written key coming soon. Tell me which one would you prefer, creating a page
+
+**Claude**
+
+Last step, as `CLAUDE.md` requires: updating the conversation log.
 
 <!-- memory-log:end -->

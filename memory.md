@@ -27,7 +27,7 @@ The project's memory: what's been built, how we work, the decisions made, what's
 - **Code map:** see the README's "Structure" section. The main places:
   - `app/`: the layout, pages and `api/contact/route.ts`.
   - `components/`: landing sections, `SiteShell`, `Loader`, `PixelCanvas`, and `contact/`.
-  - `lib/`: `gsap`, `animations`, `experience`, `pixelHover`, `pixelWipe`, `site.ts` (contact details and links), `assets`.
+  - `lib/`: `gsap`, `animations`, `experience`, `pixelHover`, `pixelWipe`, `site.ts`, `assets`. `site.ts` is the one place for every contact detail and social link.
   - `resources/`: all fonts and images.
   - `integrations/google-apps-script/contact-form.gs`.
   - `scripts/`: `build-static.mjs`, `gen-pixel-art.py`, `memory/`.
@@ -68,6 +68,12 @@ The project's memory: what's been built, how we work, the decisions made, what's
   - A panel at the bottom right shows score, lines, level, best score, the next piece and arrow-key hints.
   - On phones the panel becomes a bar under the field.
 - **Placeholder copy:** the Figma's placeholder button labels were replaced. See the README "Copy changes" table.
+- **Contact details and profiles** (from the owner, 11 Nov 2026), all set in `lib/site.ts`:
+  - Email `hello@newview.co`.
+  - Phone and WhatsApp +91 91801 38012, used in the footer and on the contact page.
+  - Instagram https://www.instagram.com/hello.newview/ and X https://x.com/hellodotnewview, as footer icons that open in a new tab.
+  - Book a Free Call opens https://cal.com/newview-design-wk2eac/schedule-call in a new tab.
+  - The LinkedIn and Facebook footer icons stay hidden until those profiles exist: their links are empty in `SOCIAL_LINKS`.
 
 ## 4. Contact form (working)
 
@@ -88,10 +94,9 @@ The project's memory: what's been built, how we work, the decisions made, what's
   - the speed improvements;
   - the contact page, form and Pixel Stack game;
   - the page transitions;
+  - the real contact details and social links;
   - this memory file.
-- **Waiting on the owner:**
-  - The **booking link** for Book a Free Call (Calendly or Cal.com). It's currently an email placeholder (`CONTACT_PAGE.bookingHref` in `lib/site.ts`).
-  - **Which phone number is right:** +1 347-363-4553 on the contact page, or +91-911478439 in the footer.
+- **Waiting on the owner:** LinkedIn and Facebook profile links, if those profiles are created. Until then their footer icons stay hidden.
 - **To check before launch:**
   - The Season Mix files are a trial licensed "Personal Use Only". Buy a commercial licence.
   - Vercel's Hobby plan is for non-commercial use. A business site may need the Pro plan.

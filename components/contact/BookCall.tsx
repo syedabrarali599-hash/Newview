@@ -11,7 +11,13 @@ import styles from "./ContactPage.module.css";
  */
 export default function BookCall({ className = "" }: { className?: string }) {
   return (
-    <a href={CONTACT_PAGE.bookingHref} className={`${styles.bookCall} ${className}`} data-pixel-hover>
+    <a
+      href={CONTACT_PAGE.bookingHref}
+      className={`${styles.bookCall} ${className}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-pixel-hover
+    >
       <span className={styles.avatars} aria-hidden="true">
         <span className={styles.you}>YOU</span>
         <span className={styles.plus}>+</span>

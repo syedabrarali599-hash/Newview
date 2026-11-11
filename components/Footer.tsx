@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { useExperience } from "@/lib/experience";
-import { CONTACT_EMAIL, CONTACT_PATH, CONTACT_PHONE } from "@/lib/site";
+import { CONTACT_EMAIL, CONTACT_PAGE, CONTACT_PATH, CONTACT_PHONE, SOCIAL_LINKS } from "@/lib/site";
 import styles from "./Footer.module.css";
 
 const NAV = [
@@ -16,25 +16,25 @@ const NAV = [
 const SOCIALS = [
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/",
+    href: SOCIAL_LINKS.linkedin,
     d: "M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92ZM20.44 13.4c0-3.1-1.66-4.54-3.87-4.54a3.34 3.34 0 0 0-3.02 1.66V8.5h-3.38V20h3.38v-5.69c0-1.5.28-2.95 2.14-2.95 1.83 0 1.86 1.71 1.86 3.05V20h3.38l-.49-6.6Z",
   },
   {
     label: "X",
-    href: "https://x.com/",
+    href: SOCIAL_LINKS.x,
     d: "M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.77L17.75 3Zm-1.08 16.17h1.7L7.4 4.74H5.58l11.09 14.43Z",
   },
   {
     label: "Instagram",
-    href: "https://www.instagram.com/",
+    href: SOCIAL_LINKS.instagram,
     d: "M12 7.2a4.8 4.8 0 1 0 0 9.6 4.8 4.8 0 0 0 0-9.6Zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2ZM17 5.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2ZM12 3.7c2.7 0 3 0 4.1.06 2.7.12 4 1.42 4.1 4.1.06 1.06.06 1.38.06 4.1s0 3.04-.06 4.1c-.12 2.68-1.4 3.98-4.1 4.1-1.06.06-1.38.06-4.1.06s-3.04 0-4.1-.06c-2.72-.12-3.98-1.43-4.1-4.1C3.74 15 3.72 14.7 3.72 12s0-3.04.06-4.1c.12-2.68 1.4-3.98 4.1-4.1C8.96 3.7 9.3 3.7 12 3.7ZM12 2c-2.72 0-3.06 0-4.12.06-3.64.17-5.65 2.18-5.82 5.82C2 8.94 2 9.28 2 12s0 3.06.06 4.12c.17 3.63 2.18 5.65 5.82 5.82C8.94 22 9.28 22 12 22s3.06 0 4.12-.06c3.63-.17 5.65-2.18 5.82-5.82.06-1.06.06-1.4.06-4.12s0-3.06-.06-4.12c-.16-3.63-2.18-5.65-5.82-5.82C15.06 2 14.72 2 12 2Z",
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/",
+    href: SOCIAL_LINKS.facebook,
     d: "M13.5 21v-7.5h2.53l.38-2.94H13.5V8.69c0-.85.24-1.43 1.46-1.43h1.55V4.64c-.27-.04-1.19-.12-2.26-.12-2.24 0-3.77 1.37-3.77 3.88v2.16H7.95v2.94h2.53V21h3.02Z",
   },
-];
+].filter((s) => s.href); // profiles without a link (see lib/site.ts) stay hidden
 
 export default function Footer() {
   const root = useRef<HTMLElement>(null);
@@ -89,7 +89,7 @@ export default function Footer() {
         <p className={styles.colTitle}>Contact</p>
         <ul className={styles.list}>
           <li>
-            <a href={`tel:${CONTACT_PHONE.replace(/[^+\d]/g, "")}`} className={styles.link}>
+            <a href={CONTACT_PAGE.phoneHref} className={styles.link}>
               {CONTACT_PHONE}
             </a>
           </li>

@@ -100,7 +100,7 @@ Images are shipped as compressed WebP; the full-size source files are kept in `r
 
 - **Fonts** – everything lives in `resources/fonts` (declared in `resources/fonts/fonts.css`). Season Mix Regular and Medium come from `season-font-family.zip` (also kept there) and were converted to WOFF2. That download is a *trial, personal-use-only* licence — buy the commercial licence before the site goes live.
 - **Pixel illustrations** – drawn in `scripts/gen-pixel-art.py`; run `python3 scripts/gen-pixel-art.py` after editing to regenerate `components/pixelArt.data.ts`.
-- **Links** – CTAs open an email to `hello@newview.co` (see `lib/site.ts`). The social links point to each network's home page, and the "View Project" links scroll to the work section.
+- **Links** – every contact detail and profile lives in `lib/site.ts`: email, phone (also used for WhatsApp), the Cal.com booking link behind "Book a Free Call", and the footer's social profiles. A profile left empty there (LinkedIn and Facebook for now) hides its footer icon. The "View Project" links scroll to the work section.
 
 ## Structure
 

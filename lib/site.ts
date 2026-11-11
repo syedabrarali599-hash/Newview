@@ -1,19 +1,34 @@
+/** New View's contact details and profiles — the single place to change them. */
+
 export const CONTACT_EMAIL = "hello@newview.co";
-export const CONTACT_PHONE = "+91-911478439";
+
+/** Shown on the site; the links below use the same number without spaces. */
+export const CONTACT_PHONE = "+91 91801 38012";
+const PHONE_DIGITS = "919180138012";
 
 /** Every "contact us" CTA on the site leads to the contact page. */
 export const CONTACT_PATH = "/contact";
 
-/** Contact page details (from the Figma "Contact Us" frame). */
+/** "Book a Free Call" opens the Cal.com scheduling page. */
+export const BOOKING_URL = "https://cal.com/newview-design-wk2eac/schedule-call";
+
+/**
+ * Social profiles shown in the footer. Leave a link empty ("") to hide its
+ * icon until the profile exists.
+ */
+export const SOCIAL_LINKS = {
+  instagram: "https://www.instagram.com/hello.newview/",
+  x: "https://x.com/hellodotnewview",
+  linkedin: "",
+  facebook: "",
+};
+
+/** Contact page details. */
 export const CONTACT_PAGE = {
-  phone: "+1 347-363-4553",
-  phoneHref: "tel:+13473634553",
-  whatsappHref: "https://wa.me/13473634553",
+  phone: CONTACT_PHONE,
+  phoneHref: `tel:+${PHONE_DIGITS}`,
+  whatsappHref: `https://wa.me/${PHONE_DIGITS}`,
   email: CONTACT_EMAIL,
   emailHref: `mailto:${CONTACT_EMAIL}`,
-  /**
-   * Where "Book a Free Call" goes. Replace with your scheduling link
-   * (e.g. a Calendly or Cal.com URL) when you have one.
-   */
-  bookingHref: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Book a free call")}`,
+  bookingHref: BOOKING_URL,
 };

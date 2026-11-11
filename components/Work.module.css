@@ -147,6 +147,73 @@
   transform: translateX(6px);
 }
 
+/* ---------- Case studies: coming soon ----------
+   With a mouse, the pointer becomes an orange "Coming soon" circle over a
+   case-study card (.soon, moved by Work.tsx). Touch screens can't hover, so
+   each card carries a "Coming soon" stamp and label instead. */
+.soon {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-align: center;
+  pointer-events: none;
+  visibility: hidden;
+  box-shadow: 0 12px 30px rgba(232, 83, 19, 0.28);
+}
+
+.stamp,
+.onTouch {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card[data-soon] {
+    cursor: none;
+  }
+}
+
+@media (hover: none) {
+  .onHover {
+    display: none;
+  }
+
+  .onTouch {
+    display: block;
+  }
+
+  .stamp {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(232, 83, 19, 0.25);
+  }
+}
+
 /* ---------- "This spot is saved for you" ---------- */
 .saved {
   background: var(--orange);

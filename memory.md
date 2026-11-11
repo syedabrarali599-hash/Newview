@@ -67,6 +67,10 @@ The project's memory: what's been built, how we work, the decisions made, what's
   - The whole grid is playable, with 38px blocks.
   - A panel at the bottom right shows score, lines, level, best score, the next piece and arrow-key hints.
   - On phones the panel becomes a bar under the field.
+- **Case-study cards** (owner's choice, 11 Nov 2026): the case studies aren't published yet, so the cards aren't links.
+  - With a mouse, the pointer becomes an orange "Coming soon" circle over a card.
+  - On touch screens, each card shows a "Coming soon" stamp, and "View Project →" reads "Case study coming soon".
+  - When a case study is ready, its card becomes a link again (`components/Work.tsx`).
 - **Placeholder copy:** the Figma's placeholder button labels were replaced. See the README "Copy changes" table.
 - **Contact details and profiles** (from the owner, 11 Nov 2026), all set in `lib/site.ts`:
   - Email `hello@newview.co`.
@@ -95,6 +99,7 @@ The project's memory: what's been built, how we work, the decisions made, what's
   - the contact page, form and Pixel Stack game;
   - the page transitions;
   - the real contact details and social links;
+  - the "Coming soon" case-study cards;
   - this memory file.
 - **Waiting on the owner:** LinkedIn and Facebook profile links, if those profiles are created. Until then their footer icons stay hidden.
 - **To check before launch:**
